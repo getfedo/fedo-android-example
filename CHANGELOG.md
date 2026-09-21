@@ -26,6 +26,10 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Provider ids that share a display name now merge into one filter entry:
+  OpenRouter ships both `meta/…` and `meta-llama/…` as "Meta", which used to
+  render as two identical chips. Selecting the entry filters on every id
+  behind it by @mabd-agent
 - `README.md`, `CONTRIBUTING.md`, `SECURITY.md` and `CODE_OF_CONDUCT.md`,
   ported from the iOS example and rewritten for the Gradle/Android workflow,
   plus `.github/` issue forms, PR template and dependabot config by @mabd-agent
