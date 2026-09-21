@@ -17,7 +17,8 @@ const val OPEN_ROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models"
  * Fetches the OpenRouter catalogue. [baseUrl] is a parameter so tests can point
  * it at a local server; production uses the default.
  */
-internal class OpenRouterDataSource(
+// Open only so tests can stand in a double for it; see testing.md.
+internal open class OpenRouterDataSource(
     private val client: OkHttpClient = OkHttpClient(),
     private val json: Json = Json { ignoreUnknownKeys = true },
     private val baseUrl: String = OPEN_ROUTER_MODELS_URL,
@@ -26,7 +27,7 @@ internal class OpenRouterDataSource(
      * Models, newest first. Never throws: a non-2xx response, a dropped
      * connection and a body that will not decode all come back as a failure.
      */
-    suspend fun getModels(): Result<List<AiModel>> = withContext(Dispatchers.IO) {
+    open suspend fun getModels(): Result<List<AiModel>> = withContext(Dispatchers.IO) {
         val request = Request.Builder().url(baseUrl).build()
 
         runCatching {

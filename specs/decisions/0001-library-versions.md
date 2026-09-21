@@ -46,7 +46,10 @@ compose and navigation3 cannot drift apart.
 
 Rejected:
 
-- **Navigation3 1.2.0-rc01** — prerelease; 1.1.7 is the newest stable.
+- **Navigation3 1.2.0-rc01** — prerelease; 1.1.7 is the newest stable. (The
+  one prerelease this project does accept is `material3`, because expressive
+  is internal in every stable release — see
+  [0003](0003-material3-expressive.md).)
 - **Retrofit** — OkHttp plus one `Request` covers a single unauthenticated
   GET. A second HTTP abstraction earns nothing here.
 - **Room / DataStore / WorkManager in app code** — no offline requirement.

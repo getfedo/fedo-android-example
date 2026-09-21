@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">ModelPulse</string>
+
+    <!-- Models list -->
+    <string name="models_title">Models</string>
+    <string name="models_loading">Loading the catalogue</string>
+    <string name="models_retry">Retry</string>
+    <string name="models_refresh">Refresh</string>
+    <string name="models_empty_title">No models</string>
+    <string name="models_empty_body">OpenRouter returned an empty catalogue.</string>
+    <string name="models_refresh_failed">Showing the models loaded earlier. %1$s</string>
+    <string name="models_context">Context %1$s</string>
+    <string name="models_input_price">%1$s / 1M in</string>
 </resources>

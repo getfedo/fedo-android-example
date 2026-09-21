@@ -29,6 +29,16 @@ Targets Fedo SDK `0.4.0`.
 - Pure formatters `perMillionLabel()`, `contextLabel()` and `relativeLabel()`,
   covering "Free", "Variable" and the "<$0.01" floor, with unit tests by @mabd-agent
 
+- Models list screen: newest models first, with loading, empty and error
+  states, pull to refresh, and an inline notice when a refresh fails while
+  models are already on screen — the list is never wiped by @mabd-agent
+- `ModelsRepository`, which keeps the last successful response in memory for
+  the session. A refresh started while a load is already running joins it and
+  shares its result, so two callers never cause two fetches and neither is
+  left with a cancellation instead of a result by @mabd-agent
+- Koin wiring for the data and UI layers, started from
+  `ModelPulseApplication` by @mabd-agent
+
 ### Changed
 
 - `specs/architecture.md` now matches the shipped data layer: the data source
@@ -36,6 +46,10 @@ Targets Fedo SDK `0.4.0`.
   job, and the mapping shows the lowercased provider slug and the id-prefix
   fallback for the provider name by @mabd-agent
 - `OpenRouterDataSource` is `internal`, as the architecture spec states by @mabd-agent
+- `material3` is pinned to 1.5.0-alpha28, ahead of the Compose BOM, because
+  the Material 3 expressive APIs are `internal` in every stable release.
+  Recorded in `specs/decisions/0003-material3-expressive.md` by @mabd-agent
+- The app theme is `MaterialExpressiveTheme` by @mabd-agent
 - R8 is enabled for the release build, which strips the Fedo SDK's leaked test
   dependencies from the release APK: 46 MB debug against 2.5 MB release.
   Recorded in `specs/decisions/0002-release-optimization.md` by @mabd-agent

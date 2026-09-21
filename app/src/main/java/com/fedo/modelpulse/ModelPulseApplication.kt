@@ -2,12 +2,21 @@ package com.fedo.modelpulse
 
 import android.app.Application
 import android.util.Log
+import com.fedo.modelpulse.di.dataModule
+import com.fedo.modelpulse.di.uiModule
 import com.fedo.sdk.Fedo
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class ModelPulseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidContext(this@ModelPulseApplication)
+            modules(dataModule, uiModule)
+        }
 
         if (!FedoIntegration.isConfigured) {
             // Never log the key itself, only whether one was found.

@@ -60,8 +60,12 @@ Three layers, unidirectional data flow:
 - **No snapshots**: never expose `getModels(): List<Model>`, always a flow.
 - **Failed refresh never wipes data.** Refresh errors surface as a separate
   signal; the cached list stays.
-- **One load at a time.** A new load supersedes the in-flight one so the
-  initial load, refresh and retry cannot race.
+- **One load at a time.** A refresh started while one is already running
+  joins it and shares its result, so the initial load, a pull to refresh and
+  a retry cannot race or double-fetch. The catalogue is one unparameterised
+  GET: a second caller wants exactly what the first is already fetching.
+  Cancelling the first load instead would hand its caller a
+  `CancellationException` and no result.
 
 ### Repository
 
@@ -70,7 +74,7 @@ interface ModelsRepository {
     /** Last known models. Empty until the first successful load. */
     val models: StateFlow<List<AiModel>>
 
-    /** Loads from the network. Cancels any in-flight load. */
+    /** Loads from the network, joining a load already in flight. */
     suspend fun refresh(): Result<Unit>
 }
 
@@ -84,15 +88,18 @@ internal class DefaultModelsRepository(
 
     private var inFlight: Deferred<Result<Unit>>? = null
 
-    override suspend fun refresh(): Result<Unit> {
-        inFlight?.cancel()
-        val job = scope.async {
+    private val lock = Mutex()
+
+    override suspend fun refresh(): Result<Unit> = currentOrNewLoad().await()
+
+    private suspend fun currentOrNewLoad(): Deferred<Result<Unit>> = lock.withLock {
+        inFlight?.takeIf { it.isActive }?.let { return it }
+
+        scope.async {
             remote.getModels()
                 .onSuccess { models -> _models.value = models }
                 .map { }
-        }
-        inFlight = job
-        return job.await()
+        }.also { inFlight = it }
     }
 }
 ```
@@ -320,7 +327,7 @@ val uiModule = module {
 **Scenario**: show the models list
 
 1. `ModelsViewModel` is created; `uiState` starts as `Loading`, `init` calls `refresh()`
-2. `ModelsRepository.refresh()` cancels any in-flight load and starts a new one
+2. `ModelsRepository.refresh()` joins the load already in flight, or starts one
 3. `OpenRouterDataSource` performs the OkHttp call
 4. kotlinx.serialization decodes the body into `NetworkModel`s
 5. DTOs map to `AiModel`s and the data source sorts them newest first
