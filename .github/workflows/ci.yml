@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  guard-api-key:
+    name: Guard against committed API key
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Check local.properties is not tracked
+        run: |
+          if git ls-files --error-unmatch local.properties >/dev/null 2>&1; then
+            echo "::error file=local.properties::local.properties holds your real Fedo API key and must never be committed (.gitignore was bypassed, e.g. with git add -f). Remove it from git tracking and rotate the key in the Fedo dashboard (https://app.getfedo.com) immediately."
+            exit 1
+          fi
+
+      - name: Check the example file carries no key
+        run: |
+          if grep -vE '^\s*#' local.properties.example | grep -E 'FEDO_API_KEY[[:space:]]*=[[:space:]]*[^[:space:]]'; then
+            echo "::error file=local.properties.example::FEDO_API_KEY must stay empty in the committed local.properties.example. Put your real key in the gitignored local.properties instead."
+            exit 1
+          fi
+
+      - name: Check no tracked file assigns a key
+        run: |
+          # BuildConfig.FEDO_API_KEY is the only way a key may reach the code,
+          # and it is filled from the gitignored local.properties at build time.
+          # "your-key-here" is the placeholder the app and the docs show people.
+          if git ls-files -z | xargs -0 grep -InE 'FEDO_API_KEY[[:space:]]*=[[:space:]]*["'"'"']?[A-Za-z0-9_-]{8,}' | grep -v 'your-key-here'; then
+            echo "::error::A Fedo API key looks committed. Keys belong in the gitignored local.properties; rotate the leaked key in the Fedo dashboard (https://app.getfedo.com) immediately."
+            exit 1
+          fi
+
+  build:
+    name: Assemble, test and lint
+    needs: guard-api-key
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+
+      # No local.properties here on purpose: the app must build and test without
+      # a Fedo API key, exactly as a fresh clone does.
+      - name: Assemble
+        run: ./gradlew :app:assembleDebug -PwarningsAsErrors=true
+
+      - name: Unit tests
+        run: ./gradlew :app:testDebugUnitTest -PwarningsAsErrors=true
+
+      - name: Lint
+        run: ./gradlew :app:lintDebug
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore

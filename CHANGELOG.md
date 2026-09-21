@@ -26,6 +26,11 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- GitHub Actions CI: a secrets guard job, then assemble, unit tests and lint on
+  a keyless checkout, with every action pinned by commit SHA. Kotlin warnings
+  are errors in CI via `-PwarningsAsErrors=true` by @mabd-agent
+- The model detail copy action moved from the deprecated
+  `LocalClipboardManager` to `LocalClipboard` by @mabd-agent
 - Provider ids that share a display name now merge into one filter entry:
   OpenRouter ships both `meta/…` and `meta-llama/…` as "Meta", which used to
   render as two identical chips. Selecting the entry filters on every id

@@ -2,6 +2,7 @@
 
 A small Jetpack Compose app that tracks the newest AI models and shows how to add in-app feedback and feature voting with the [Fedo Android SDK](https://central.sonatype.com/artifact/com.getfedo/sdk-android).
 
+[![CI](https://github.com/getfedo/fedo-android-example/actions/workflows/ci.yml/badge.svg)](https://github.com/getfedo/fedo-android-example/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![minSdk 29](https://img.shields.io/badge/minSdk-29-lightgrey.svg)
 ![Kotlin 2.3.21](https://img.shields.io/badge/Kotlin-2.3.21-orange.svg)

@@ -1,5 +1,6 @@
 package com.fedo.modelpulse.ui.detail
 
+import android.content.ClipData
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,12 +24,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +48,7 @@ import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -55,12 +58,19 @@ internal fun ModelDetailRoute(
     viewModel: ModelDetailViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val clipboard = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
 
     ModelDetailScreen(
         uiState = uiState,
         onBackClick = onBackClick,
-        onCopyId = { id -> clipboard.setText(AnnotatedString(id)) },
+        onCopyId = { id ->
+            // LocalClipboard, not the deprecated LocalClipboardManager: the
+            // write is a suspend call now.
+            scope.launch {
+                clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(CLIP_LABEL, id)))
+            }
+        },
         modifier = modifier,
     )
 }
@@ -237,6 +247,8 @@ private class ModelDetailUiStateProvider : PreviewParameterProvider<ModelDetailU
         ModelDetailUiState.Success(previewModel),
     )
 }
+
+private const val CLIP_LABEL = "model id"
 
 private val previewModel = AiModel(
     id = "anthropic/claude-opus-5",
