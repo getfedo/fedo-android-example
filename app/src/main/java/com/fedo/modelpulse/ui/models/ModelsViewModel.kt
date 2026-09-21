@@ -16,9 +16,11 @@ class ModelsViewModel(
 ) : ViewModel() {
 
     private val loadState = MutableStateFlow<LoadState>(LoadState.Loading)
+    private val query = MutableStateFlow("")
+    private val provider = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<ModelsUiState> =
-        combine(repository.models, loadState, ::toUiState)
+        combine(repository.models, query, provider, loadState, ::toUiState)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
@@ -43,6 +45,15 @@ class ModelsViewModel(
                 onFailure = { LoadState.Failed(it.userMessage()) },
             )
         }
+    }
+
+    fun onQueryChange(value: String) {
+        query.value = value
+    }
+
+    /** Null clears the filter. */
+    fun onProviderChange(slug: String?) {
+        provider.value = slug
     }
 
     private companion object {

@@ -1,6 +1,9 @@
 package com.fedo.modelpulse.ui.models
 
 import com.fedo.modelpulse.data.AiModel
+import com.fedo.modelpulse.data.ProviderFilter
+import com.fedo.modelpulse.data.filterBy
+import com.fedo.modelpulse.data.providerFilters
 
 /** Every state the models list can be in. */
 sealed interface ModelsUiState {
@@ -11,11 +14,22 @@ sealed interface ModelsUiState {
     data class Error(val message: String) : ModelsUiState
 
     data class Success(
+        /** What the search and provider filter left. */
         val models: List<AiModel>,
+        val query: String = "",
+        val providers: List<ProviderFilter> = emptyList(),
+        /** Null when no provider is picked, or when the picked one is gone. */
+        val selectedProvider: String? = null,
         val isRefreshing: Boolean = false,
         /** Set when a refresh failed while data was already on screen. */
         val refreshError: String? = null,
-    ) : ModelsUiState
+    ) : ModelsUiState {
+
+        val isFiltered: Boolean get() = query.isNotBlank() || selectedProvider != null
+
+        /** Empty because of the filters, not because the catalogue is empty. */
+        val isNoResults: Boolean get() = models.isEmpty() && isFiltered
+    }
 }
 
 /** Where a load is, independent of what data is cached. */
@@ -27,15 +41,30 @@ internal sealed interface LoadState {
 }
 
 /**
- * Pure: cached models plus load state in, screen state out. This is what the
- * unit tests call.
+ * Pure: cached models, search, provider and load state in, screen state out.
+ * This is what the unit tests call.
  */
-internal fun toUiState(models: List<AiModel>, load: LoadState): ModelsUiState = when {
-    models.isNotEmpty() -> ModelsUiState.Success(
-        models = models,
-        isRefreshing = load is LoadState.Refreshing,
-        refreshError = (load as? LoadState.Failed)?.message,
-    )
+internal fun toUiState(
+    models: List<AiModel>,
+    query: String,
+    provider: String?,
+    load: LoadState,
+): ModelsUiState = when {
+    models.isNotEmpty() -> {
+        val providers = models.providerFilters()
+        // A refresh that drops the provider drops the selection with it, so the
+        // filter can never strand the screen on a provider that no longer exists.
+        val selected = provider?.takeIf { slug -> providers.any { it.slug == slug } }
+
+        ModelsUiState.Success(
+            models = models.filterBy(query, selected),
+            query = query,
+            providers = providers,
+            selectedProvider = selected,
+            isRefreshing = load is LoadState.Refreshing,
+            refreshError = (load as? LoadState.Failed)?.message,
+        )
+    }
 
     load is LoadState.Failed -> ModelsUiState.Error(load.message)
     load is LoadState.Loading || load is LoadState.Refreshing -> ModelsUiState.Loading

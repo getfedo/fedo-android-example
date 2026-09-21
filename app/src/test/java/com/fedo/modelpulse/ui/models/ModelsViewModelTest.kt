@@ -72,12 +72,12 @@ class ModelsViewModelTest {
 
     @Test
     fun `uiState is Loading until the first load settles`() = runTest {
-        assertEquals(ModelsUiState.Loading, toUiState(emptyList(), LoadState.Loading))
+        assertEquals(ModelsUiState.Loading, toUiState(emptyList(), query = "", provider = null, load = LoadState.Loading))
     }
 
     @Test
     fun `a refresh with data on screen sets isRefreshing rather than Loading`() = runTest {
-        val state = toUiState(TestData.testModels, LoadState.Refreshing)
+        val state = toUiState(TestData.testModels, query = "", provider = null, load = LoadState.Refreshing)
 
         assertTrue((state as ModelsUiState.Success).isRefreshing)
     }

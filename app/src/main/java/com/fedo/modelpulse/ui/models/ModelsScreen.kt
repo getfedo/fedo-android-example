@@ -9,14 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -42,8 +48,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fedo.modelpulse.R
 import com.fedo.modelpulse.data.AiModel
 import com.fedo.modelpulse.data.Price
+import com.fedo.modelpulse.data.ProviderFilter
 import com.fedo.modelpulse.data.contextLabel
 import com.fedo.modelpulse.data.perMillionLabel
+import com.fedo.modelpulse.data.providerFilters
 import com.fedo.modelpulse.data.relativeLabel
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import java.math.BigDecimal
@@ -61,6 +69,8 @@ internal fun ModelsRoute(
     ModelsScreen(
         uiState = uiState,
         onRefresh = viewModel::refresh,
+        onQueryChange = viewModel::onQueryChange,
+        onProviderChange = viewModel::onProviderChange,
         modifier = modifier,
     )
 }
@@ -70,6 +80,8 @@ internal fun ModelsRoute(
 internal fun ModelsScreen(
     uiState: ModelsUiState,
     onRefresh: () -> Unit,
+    onQueryChange: (String) -> Unit,
+    onProviderChange: (String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -95,7 +107,9 @@ internal fun ModelsScreen(
                 modifier = Modifier.padding(innerPadding),
             )
 
-            is ModelsUiState.Success -> if (uiState.models.isEmpty()) {
+            // providers is empty only when the catalogue itself is; a filter
+            // that matches nothing still has providers to clear.
+            is ModelsUiState.Success -> if (uiState.providers.isEmpty()) {
                 MessageState(
                     message = stringResource(R.string.models_empty_body),
                     actionLabel = stringResource(R.string.models_refresh),
@@ -107,6 +121,8 @@ internal fun ModelsScreen(
                 ModelsContent(
                     state = uiState,
                     onRefresh = onRefresh,
+                    onQueryChange = onQueryChange,
+                    onProviderChange = onProviderChange,
                     contentPadding = innerPadding,
                 )
             }
@@ -119,6 +135,8 @@ internal fun ModelsScreen(
 private fun ModelsContent(
     state: ModelsUiState.Success,
     onRefresh: () -> Unit,
+    onQueryChange: (String) -> Unit,
+    onProviderChange: (String?) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
@@ -143,6 +161,22 @@ private fun ModelsContent(
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            item(key = SEARCH_KEY) {
+                SearchField(
+                    query = state.query,
+                    onQueryChange = onQueryChange,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
+
+            item(key = PROVIDERS_KEY) {
+                ProviderFilters(
+                    providers = state.providers,
+                    selected = state.selectedProvider,
+                    onProviderChange = onProviderChange,
+                )
+            }
+
             // A failed refresh keeps the list and says so here, above it.
             state.refreshError?.let { message ->
                 item(key = REFRESH_ERROR_KEY) {
@@ -154,12 +188,100 @@ private fun ModelsContent(
                 }
             }
 
-            items(items = state.models, key = AiModel::id) { model ->
-                ModelCard(
-                    model = model,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
+            if (state.isNoResults) {
+                item(key = NO_RESULTS_KEY) {
+                    MessageState(
+                        message = stringResource(R.string.models_no_results_body),
+                        actionLabel = stringResource(R.string.models_clear_filters),
+                        onAction = {
+                            onQueryChange("")
+                            onProviderChange(null)
+                        },
+                        title = stringResource(R.string.models_no_results_title),
+                        modifier = Modifier.padding(top = 48.dp),
+                    )
+                }
+            } else {
+                items(items = state.models, key = AiModel::id) { model ->
+                    ModelCard(
+                        model = model,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun SearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier.fillMaxWidth(),
+        singleLine = true,
+        shape = MaterialTheme.shapes.large,
+        placeholder = { Text(stringResource(R.string.models_search_hint)) },
+        // ponytail: two vector drawables in res/, not the material-icons
+        // artifact — it is not a dependency of this project.
+        leadingIcon = {
+            Icon(painterResource(R.drawable.ic_search), contentDescription = null)
+        },
+        trailingIcon = if (query.isEmpty()) {
+            null
+        } else {
+            {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = stringResource(R.string.models_search_clear),
+                    )
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun ProviderFilters(
+    providers: List<ProviderFilter>,
+    selected: String?,
+    onProviderChange: (String?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        item(key = ALL_PROVIDERS_KEY) {
+            FilterChip(
+                selected = selected == null,
+                onClick = { onProviderChange(null) },
+                label = { Text(stringResource(R.string.models_provider_all)) },
+            )
+        }
+
+        items(items = providers, key = ProviderFilter::slug) { provider ->
+            FilterChip(
+                selected = provider.slug == selected,
+                onClick = {
+                    onProviderChange(provider.slug.takeIf { it != selected })
+                },
+                label = {
+                    Text(
+                        stringResource(
+                            R.string.models_provider_chip,
+                            provider.name,
+                            provider.count,
+                        ),
+                    )
+                },
+            )
         }
     }
 }
@@ -277,6 +399,10 @@ private fun MessageState(
 }
 
 private const val REFRESH_ERROR_KEY = "refresh-error"
+private const val SEARCH_KEY = "search"
+private const val PROVIDERS_KEY = "providers"
+private const val NO_RESULTS_KEY = "no-results"
+private const val ALL_PROVIDERS_KEY = "all-providers"
 
 @Preview(name = "Light")
 @Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -288,7 +414,12 @@ private fun ModelsScreenPreview(
     @PreviewParameter(ModelsUiStateProvider::class) uiState: ModelsUiState,
 ) {
     ModelPulseTheme {
-        ModelsScreen(uiState = uiState, onRefresh = {})
+        ModelsScreen(
+            uiState = uiState,
+            onRefresh = {},
+            onQueryChange = {},
+            onProviderChange = {},
+        )
     }
 }
 
@@ -296,9 +427,18 @@ private class ModelsUiStateProvider : PreviewParameterProvider<ModelsUiState> {
     override val values = sequenceOf(
         ModelsUiState.Loading,
         ModelsUiState.Error("Couldn't reach OpenRouter. Check your connection."),
-        ModelsUiState.Success(previewModels),
-        ModelsUiState.Success(previewModels, isRefreshing = true),
-        ModelsUiState.Success(previewModels, refreshError = "Couldn't reach OpenRouter."),
+        ModelsUiState.Success(previewModels, providers = previewProviders),
+        ModelsUiState.Success(previewModels, providers = previewProviders, isRefreshing = true),
+        ModelsUiState.Success(
+            models = previewModels,
+            providers = previewProviders,
+            refreshError = "Couldn't reach OpenRouter.",
+        ),
+        ModelsUiState.Success(
+            models = emptyList(),
+            query = "gpt",
+            providers = previewProviders,
+        ),
         ModelsUiState.Success(models = emptyList()),
     )
 }
@@ -329,3 +469,5 @@ private val previewModels = listOf(
         inputModalities = listOf("text"),
     ),
 )
+
+private val previewProviders = previewModels.providerFilters()

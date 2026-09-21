@@ -26,6 +26,15 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Search and provider filter on the models list: search matches a model's name
+  or id case-insensitively, the provider chips count their models and list the
+  biggest first, and the two combine. Providers group by the stable
+  `providerSlug`, so a refresh that drops the selected provider clears the
+  selection instead of stranding an empty screen. A search or filter that
+  matches nothing shows a no-results state, distinct from an empty catalogue
+  by @mabd-agent
+- `ic_search` and `ic_close` vector drawables, inlined from Material Symbols so
+  the search field has icons without the `material-icons` artifact by @mabd-agent
 - Pure formatters `perMillionLabel()`, `contextLabel()` and `relativeLabel()`,
   covering "Free", "Variable" and the "<$0.01" floor, with unit tests by @mabd-agent
 

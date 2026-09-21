@@ -31,6 +31,13 @@ object TestData {
         completionPrice = Price.Free,
     )
 
+    /** Same provider slug as [claudeOpus], so the two merge into one filter. */
+    val claudeSonnet = claudeOpus.copy(
+        id = "anthropic/claude-sonnet-5",
+        shortName = "Claude Sonnet 5",
+        created = Instant.ofEpochSecond(1_750_000_000),
+    )
+
     /** Newest first, the order the data source promises. */
     val testModels = listOf(claudeOpus, llama)
 }
