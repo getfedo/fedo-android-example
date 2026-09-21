@@ -22,6 +22,29 @@ class ModelsFilterViewModelTest {
     private val allModels = TestData.testModels + TestData.claudeSonnet
 
     @Test
+    fun `AC-1 picking a provider reports it to Fedo as the favourite`() = runTest {
+        val reported = mutableListOf<String?>()
+        repository.sendModels(allModels)
+        val viewModel = ModelsViewModel(repository, reported::add)
+
+        viewModel.onProviderChange("anthropic")
+
+        assertEquals(listOf("anthropic"), reported)
+    }
+
+    @Test
+    fun `AC-2 clearing the filter reports no favourite, not the previous one`() = runTest {
+        val reported = mutableListOf<String?>()
+        repository.sendModels(allModels)
+        val viewModel = ModelsViewModel(repository, reported::add)
+
+        viewModel.onProviderChange("anthropic")
+        viewModel.onProviderChange(null)
+
+        assertEquals(listOf("anthropic", null), reported)
+    }
+
+    @Test
     fun `AC-1 search and provider filter combine`() = runTest {
         repository.sendModels(allModels)
         val viewModel = ModelsViewModel(repository)
