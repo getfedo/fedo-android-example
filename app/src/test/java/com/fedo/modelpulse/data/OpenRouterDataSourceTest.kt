@@ -6,6 +6,7 @@ import mockwebserver3.MockResponse
 import mockwebserver3.junit4.MockWebServerRule
 import okhttp3.OkHttpClient
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -28,6 +29,39 @@ class OpenRouterDataSourceTest {
         val models = dataSource().getModels().getOrThrow()
 
         assertEquals(listOf("newest", "middle", "oldest"), models.map(AiModel::shortName))
+    }
+
+    @Test
+    fun `AC-1 the captured OpenRouter response decodes with the production config`() = runTest {
+        serverRule.server.enqueue(MockResponse(body = readResource("models.json")))
+
+        val models = dataSource().getModels().getOrThrow()
+
+        assertEquals(6, models.size)
+        // Newest first, and every entry survived the awkward fields.
+        assertTrue(models.zipWithNext().all { (a, b) -> a.created >= b.created })
+    }
+
+    @Test
+    fun `AC-2 the fixture's awkward entries map the way the UI expects`() = runTest {
+        serverRule.server.enqueue(MockResponse(body = readResource("models.json")))
+
+        val models = dataSource().getModels().getOrThrow().associateBy(AiModel::id)
+
+        // A "~"-prefixed id loses the tilde and still groups by provider.
+        val tilde = models.getValue("deepseek/deepseek-pro-latest")
+        assertEquals("deepseek", tilde.providerSlug)
+
+        // "0" is free, "-1" is variable.
+        assertEquals(Price.Free, models.getValue("inclusionai/ling-3.0-flash-vl:free").promptPrice)
+        assertEquals(Price.Variable, models.getValue("openrouter/auto-beta").promptPrice)
+
+        // A null context_length and a missing architecture/pricing block are
+        // both survivable: the entry is still there.
+        assertNull(models.getValue("mistralai/mistral-medium-3-5").contextLength)
+        val noArchitecture = models.getValue("google/gemini-3.8-flash")
+        assertTrue(noArchitecture.inputModalities.isEmpty())
+        assertEquals(Price.Variable, noArchitecture.promptPrice)
     }
 
     @Test
@@ -60,6 +94,11 @@ class OpenRouterDataSourceTest {
         assertEquals(1, models.size)
         assertEquals(Price.Variable, models.first().promptPrice)
     }
+
+    private fun readResource(name: String): String =
+        checkNotNull(javaClass.classLoader?.getResourceAsStream(name)) { "missing $name" }
+            .bufferedReader()
+            .use { it.readText() }
 }
 
 private val OUT_OF_ORDER_PAYLOAD = """
