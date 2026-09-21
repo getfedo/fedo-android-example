@@ -286,11 +286,11 @@ private fun ProviderFilters(
             )
         }
 
-        items(items = providers, key = ProviderFilter::slug) { provider ->
+        items(items = providers, key = ProviderFilter::key) { provider ->
             FilterChip(
-                selected = provider.slug == selected,
+                selected = provider.key == selected,
                 onClick = {
-                    onProviderChange(provider.slug.takeIf { it != selected })
+                    onProviderChange(provider.key.takeIf { it != selected })
                 },
                 label = {
                     Text(

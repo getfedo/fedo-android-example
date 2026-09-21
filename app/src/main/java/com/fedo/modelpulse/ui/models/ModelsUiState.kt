@@ -54,13 +54,13 @@ internal fun toUiState(
         val providers = models.providerFilters()
         // A refresh that drops the provider drops the selection with it, so the
         // filter can never strand the screen on a provider that no longer exists.
-        val selected = provider?.takeIf { slug -> providers.any { it.slug == slug } }
+        val selectedEntry = providers.firstOrNull { it.key == provider }
 
         ModelsUiState.Success(
-            models = models.filterBy(query, selected),
+            models = models.filterBy(query, selectedEntry?.slugs),
             query = query,
             providers = providers,
-            selectedProvider = selected,
+            selectedProvider = selectedEntry?.key,
             isRefreshing = load is LoadState.Refreshing,
             refreshError = (load as? LoadState.Failed)?.message,
         )

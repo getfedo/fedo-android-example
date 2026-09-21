@@ -41,7 +41,7 @@ class ModelsFilterViewModelTest {
 
         val state = viewModel.success { it.providers.isNotEmpty() }
 
-        assertEquals(listOf("anthropic", "meta-llama"), state.providers.map { it.slug })
+        assertEquals(listOf("anthropic", "meta-llama"), state.providers.map { it.key })
         assertEquals(listOf(2, 1), state.providers.map { it.count })
     }
 
