@@ -41,4 +41,17 @@
     <string name="roadmap_not_configured_title">Fedo not configured</string>
     <string name="roadmap_not_configured_body">The roadmap board comes from the Fedo SDK. Add your API key to local.properties and rebuild to see it.</string>
     <string name="roadmap_not_configured_snippet">FEDO_API_KEY=your-key-here</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_sdk_status">Fedo SDK</string>
+    <string name="settings_sdk_configured">Configured. The roadmap board and feedback are live.</string>
+    <string name="settings_sdk_not_configured">Not configured. Add an API key to local.properties and rebuild:</string>
+    <string name="settings_demo_account">Demo account</string>
+    <string name="settings_demo_explainer">Feedback, votes and comments you leave as a guest move to this account when you sign in. Signing out starts a new guest.</string>
+    <string name="settings_name">Name</string>
+    <string name="settings_email">Email</string>
+    <string name="settings_sign_in">Sign in as demo user</string>
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_signed_in_as">Signed in as %1$s</string>
 </resources>

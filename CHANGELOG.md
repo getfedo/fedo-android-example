@@ -26,6 +26,13 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Settings screen: Fedo SDK status and a demo account. Signing in calls
+  `setUserID` (a generated `demo-` id, never the email), `setUserDisplayName`
+  and `setUserEmail`; signing out calls `logout()`. The demo user is kept in
+  SharedPreferences so sign-in survives a restart, and the controls are
+  disabled with an explanation when no API key is configured by @mabd-agent
+- `specs/decisions/0004-demo-user-persistence.md`: why the demo user is the
+  one thing this app persists by @mabd-agent
 - Roadmap destination hosting the Fedo feedback board (`FedoFeedbackScreen`),
   which owns its internal navigation; backing out of its root returns to the
   models list. Without an API key the tab explains how to add one instead of

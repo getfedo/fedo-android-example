@@ -8,7 +8,8 @@
   back stack). HTTP: OkHttp. JSON: kotlinx.serialization.
 - No offline support. Remote is the source of truth; the repository caches
   the last successful response in memory for the session. No Room, no
-  DataStore, no WorkManager.
+  DataStore, no WorkManager. One exception: the demo user in
+  SharedPreferences — see decisions/0004-demo-user-persistence.md.
 - UI: use material 3 expressive ui elements.
 - A failed refresh never wipes loaded data.
 - Every screen composable has a `@Preview` per `UiState`.

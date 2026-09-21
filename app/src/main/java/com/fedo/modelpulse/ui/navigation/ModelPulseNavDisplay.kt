@@ -1,15 +1,12 @@
 package com.fedo.modelpulse.ui.navigation
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -23,6 +20,7 @@ import com.fedo.modelpulse.FedoIntegration
 import com.fedo.modelpulse.ui.detail.ModelDetailRoute
 import com.fedo.modelpulse.ui.models.ModelsRoute
 import com.fedo.modelpulse.ui.roadmap.RoadmapScreen
+import com.fedo.modelpulse.ui.settings.SettingsRoute
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -73,23 +71,13 @@ fun ModelPulseNavDisplay(modifier: Modifier = Modifier) {
                         onBack = { backStack.removeLastOrNull() },
                     )
                 }
-                entry<SettingsKey> { Placeholder(stringResource(R.string.nav_settings)) }
+                entry<SettingsKey> { SettingsRoute() }
             },
             modifier = Modifier.padding(innerPadding),
         )
     }
 }
 
-@Composable
-private fun Placeholder(label: String, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-    ) {
-        Text(label, style = MaterialTheme.typography.headlineSmall)
-    }
-}
 
 /** Kept so the keys file is the only place that knows the destination list. */
 internal val topLevelKeys: List<NavKey> = TopLevelDestination.entries.map(TopLevelDestination::key)
