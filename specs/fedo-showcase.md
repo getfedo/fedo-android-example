@@ -60,17 +60,19 @@ example and there is no sign-in form. Tapping **Sign in as demo user** calls,
 in this order:
 
 ```kotlin
-Fedo.setUserID(demoUserId)                  // "demo-" + a UUID, generated once
-Fedo.setUserDisplayName("Demo User")
-Fedo.setUserEmail("demo@modelpulse.example")
+Fedo.setUserID(demoUserId)                  // "demo-" + a UUID, never the email
+Fedo.setUserDisplayName(name)               // "Demo User" by default
+Fedo.setUserEmail(email)                    // demo@modelpulse.example by default
 ```
 
-- `demoUserId` is generated on first sign-in and kept for the process only.
-  There is no DataStore in this app (constitution), so a cold start signs in
-  as a new demo user. That is honest for a demo and keeps the rule intact.
+- `demoUserId` is generated on first sign-in and persisted in
+  SharedPreferences, so signing in survives a restart and Fedo's guest →
+  account migration is actually demonstrable. It is the one thing this app
+  stores — see decisions/0004-demo-user-persistence.md.
 - `demo@modelpulse.example` is a reserved example domain — never a real
   address.
-- **Sign out** calls `Fedo.logout()` and nothing else.
+- The name and email are editable on the Settings screen; the id never is.
+- **Sign out** calls `Fedo.logout()`, clears the stored user and nothing else.
 - `favorite_provider` (`Fedo.setUserProperty`) is set from the models provider
   filter, and cleared to `""` when the filter is cleared.
 

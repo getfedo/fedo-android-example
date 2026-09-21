@@ -6,6 +6,10 @@ import com.fedo.modelpulse.data.OpenRouterDataSource
 import com.fedo.modelpulse.ui.detail.ModelDetailViewModel
 import com.fedo.modelpulse.ui.models.ModelsViewModel
 import com.fedo.modelpulse.ui.navigation.ModelDetailKey
+import com.fedo.modelpulse.ui.settings.DemoUserStore
+import com.fedo.modelpulse.ui.settings.SettingsViewModel
+import com.fedo.modelpulse.FedoIntegration
+import org.koin.android.ext.koin.androidContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,4 +36,13 @@ val uiModule = module {
     viewModelOf(::ModelsViewModel)
     // The nav key is the argument holder; Navigation 3 has no toRoute().
     viewModel { (key: ModelDetailKey) -> ModelDetailViewModel(key, get()) }
+    single { DemoUserStore(androidContext()) }
+    viewModel {
+        val store = get<DemoUserStore>()
+        SettingsViewModel(
+            isConfigured = FedoIntegration.isConfigured,
+            loadUser = store::load,
+            saveUser = store::save,
+        )
+    }
 }

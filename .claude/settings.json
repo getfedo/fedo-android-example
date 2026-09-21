@@ -1,15 +1,27 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "bd prime --hook-json",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
-    ]
-  }
+    "hooks": {
+        "SessionStart": [
+            {
+                "hooks": [
+                    {
+                        "command": "bd prime --hook-json",
+                        "type": "command"
+                    }
+                ],
+                "matcher": ""
+            }
+        ]
+    },
+    "mcpServers": {
+        "android": {
+            "command": "path/to/uv",
+            "args": [
+                "--directory",
+                "/Users/mabd/Documents/code/open-source/cli/android-mcp-server",
+                "run",
+                "server.py"
+            ]
+        }
+    }
 }
+
