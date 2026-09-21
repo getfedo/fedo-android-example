@@ -85,7 +85,10 @@ implementation(libs.fedo.sdk) {
 ```
 
 Prefer fixing the SDK's publication (`testImplementation`, not `api`/
-`implementation`) and releasing 0.4.1.
+`implementation`) and releasing 0.4.1. Until then the workaround above is
+applied in `app/build.gradle.kts` — bead fedo-android-example-8nq.6. With it,
+`releaseRuntimeClasspath` carries none of the three, the release dex has no
+`Lorg/junit/` or `MockEngine`, and the debug APK drops from ~80 MB to ~62 MB.
 
 ## Consequences
 

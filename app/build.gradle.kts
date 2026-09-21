@@ -64,7 +64,14 @@ android {
 }
 
 dependencies {
-    implementation(libs.fedo.sdk)
+    // sdk-android 0.4.0 publishes its test dependencies at runtime scope, so
+    // they get dexed into the APK. Drop them here until the SDK's publication
+    // is fixed upstream — see bead fedo-android-example-8nq.6.
+    implementation(libs.fedo.sdk) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-junit")
+        exclude(group = "io.ktor", module = "ktor-client-mock")
+    }
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
