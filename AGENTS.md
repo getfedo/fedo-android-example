@@ -12,6 +12,7 @@ Project rules: @specs/constitution.md
 Architecture: @specs/architecture.md
 UI patterns: @specs/compose-pattern.md
 Testing: @specs/testing.md
+Fedo showcase: @specs/fedo-showcase.md
 Recorded decisions: `specs/decisions/`
 
 All tasks live in beads - never in markdown

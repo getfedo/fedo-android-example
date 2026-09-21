@@ -26,6 +26,9 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- `specs/fedo-showcase.md`: where each Fedo surface sits, what demo sign-in
+  sets, what the app does without an API key, and why Fedo failures get no
+  invented error UI by @mabd-agent
 - Model detail screen, opened by tapping a row: provider, input and output
   price per 1M tokens, context window, release date, input modalities and the
   full scrolling description, plus the model id in monospace with a copy
