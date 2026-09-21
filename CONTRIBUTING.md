@@ -93,7 +93,9 @@ The rules are written down in [`specs/constitution.md`](specs/constitution.md); 
 - Every screen composable has a `@Preview` per `UiState`.
 - Acceptance criteria carry IDs (`AC-1`, `AC-2`, …) and each maps to at least one test named after its ID. See [`specs/testing.md`](specs/testing.md).
 - Keep the example minimal and readable. Prefer the obvious solution over abstractions; comment only where the reason is not clear from the code.
-- Build with zero warnings and no new lint findings.
+- Build with zero warnings and no new lint findings. CI enforces this with
+  `-PwarningsAsErrors=true`; run `./gradlew :app:assembleDebug -PwarningsAsErrors=true`
+  locally if you want the same check before pushing.
 
 If a spec turns out to be wrong or incomplete, propose the spec change first rather than working around it.
 

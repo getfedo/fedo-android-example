@@ -19,6 +19,16 @@ val fedoApiKey: String = providers.fileContents(
         .orEmpty()
 }.getOrElse("")
 
+// CI runs with -PwarningsAsErrors=true so the zero-warning rule the contributing
+// guide states is enforced rather than hoped for. Local builds stay warnings-only.
+kotlin {
+    compilerOptions {
+        allWarningsAsErrors = providers.gradleProperty("warningsAsErrors")
+            .map(String::toBoolean)
+            .orElse(false)
+    }
+}
+
 android {
     namespace = "com.fedo.modelpulse"
     compileSdk {
