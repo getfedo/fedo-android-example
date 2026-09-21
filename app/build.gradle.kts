@@ -43,8 +43,12 @@ android {
 
     buildTypes {
         release {
+            // R8 on. It is what strips the Fedo SDK's leaked test dependencies
+            // (junit, ktor-client-mock) out of the release APK — see bead 8nq.6
+            // and decisions/0002-release-optimization.md. Keep rules, when the
+            // app needs any, go in src/main/keepRules/.
             optimization {
-                enable = false
+                enable = true
             }
         }
     }
