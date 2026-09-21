@@ -26,6 +26,10 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Fedo SDK test dependencies (`kotlin-test`, `kotlin-test-junit`,
+  `ktor-client-mock`) excluded from the app's runtime classpath: the SDK
+  publishes them at runtime scope, so they were dexed into the APK. The debug
+  APK drops from ~80 MB to ~62 MB by @mabd-agent
 - Settings screen: Fedo SDK status and a demo account. Signing in calls
   `setUserID` (a generated `demo-` id, never the email), `setUserDisplayName`
   and `setUserEmail`; signing out calls `logout()`. The demo user is kept in
