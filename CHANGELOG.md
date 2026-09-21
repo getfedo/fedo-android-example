@@ -26,6 +26,8 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- MIT `LICENSE` (Copyright 2026 Fedo) and a short `README.md` linking it, with
+  a note that the Fedo SDK ships under its own license by @mabd-agent
 - `app/src/test/resources/models.json`: a trimmed real OpenRouter response
   covering the decoder's awkward cases — a `~`-prefixed id, `"0"` and `"-1"`
   prices, a null `context_length`, a missing `architecture` block and an
