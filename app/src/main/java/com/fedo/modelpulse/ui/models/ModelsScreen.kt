@@ -23,15 +23,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -88,11 +92,32 @@ internal fun ModelsScreen(
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // A failed refresh is announced wherever the list is scrolled to, which an
+    // item at the top of the LazyColumn could not do.
+    val refreshMessage = (uiState as? ModelsUiState.Success)?.refreshError
+        ?.let { stringResource(R.string.models_refresh_failed, it) }
+    val retryLabel = stringResource(R.string.models_retry)
+
+    // Keyed on the message, so a recomposition with the same error does not
+    // show it twice; a new failure after a success is a new key.
+    LaunchedEffect(refreshMessage) {
+        if (refreshMessage == null) return@LaunchedEffect
+
+        val result = snackbarHostState.showSnackbar(
+            message = refreshMessage,
+            actionLabel = retryLabel,
+            duration = SnackbarDuration.Long,
+        )
+        if (result == SnackbarResult.ActionPerformed) onRefresh()
+    }
 
     Scaffold(
         modifier = modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             MediumFlexibleTopAppBar(
                 title = { Text(stringResource(R.string.models_title)) },
@@ -180,17 +205,6 @@ private fun ModelsContent(
                     selected = state.selectedProvider,
                     onProviderChange = onProviderChange,
                 )
-            }
-
-            // A failed refresh keeps the list and says so here, above it.
-            state.refreshError?.let { message ->
-                item(key = REFRESH_ERROR_KEY) {
-                    RefreshErrorNotice(
-                        message = message,
-                        onRetry = onRefresh,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                }
             }
 
             if (state.isNoResults) {
@@ -329,34 +343,6 @@ private fun MetaText(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Composable
-private fun RefreshErrorNotice(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        shape = MaterialTheme.shapes.large,
-    ) {
-        Row(
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.models_refresh_failed, message),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f),
-            )
-            TextButton(onClick = onRetry) {
-                Text(stringResource(R.string.models_retry))
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -404,7 +390,6 @@ private fun MessageState(
     }
 }
 
-private const val REFRESH_ERROR_KEY = "refresh-error"
 private const val SEARCH_KEY = "search"
 private const val PROVIDERS_KEY = "providers"
 private const val NO_RESULTS_KEY = "no-results"
