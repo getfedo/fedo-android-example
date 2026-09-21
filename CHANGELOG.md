@@ -26,6 +26,11 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- App navigation scaffold: a bottom navigation bar with Models, Roadmap and
+  Settings, built on Navigation 3 (`NavDisplay` + a `@Serializable` `NavKey`
+  back stack). Models is the back-stack root, so system back from any other
+  destination returns to it. Roadmap and Settings are placeholders until the
+  Fedo screens land by @mabd-agent
 - Search and provider filter on the models list: search matches a model's name
   or id case-insensitively, the provider chips count their models and list the
   biggest first, and the two combine. Providers group by the stable

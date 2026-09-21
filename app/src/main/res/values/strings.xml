@@ -20,4 +20,9 @@
     <string name="models_no_results_title">No matches</string>
     <string name="models_no_results_body">No model matches your search and filter.</string>
     <string name="models_clear_filters">Clear filters</string>
+
+    <!-- Navigation -->
+    <string name="nav_models">Models</string>
+    <string name="nav_roadmap">Roadmap</string>
+    <string name="nav_settings">Settings</string>
 </resources>
