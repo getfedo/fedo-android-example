@@ -26,6 +26,10 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- `README.md`, `CONTRIBUTING.md`, `SECURITY.md` and `CODE_OF_CONDUCT.md`,
+  ported from the iOS example and rewritten for the Gradle/Android workflow,
+  plus `.github/` issue forms, PR template and dependabot config by @mabd-agent
+- Screenshots in `docs/images/`, captured on a device by @mabd-agent
 - A failed refresh now shows a snackbar with Retry instead of an item at the
   top of the list, so it is visible wherever the list is scrolled by @mabd-agent
 - MIT `LICENSE` (Copyright 2026 Fedo) and a short `README.md` linking it, with
