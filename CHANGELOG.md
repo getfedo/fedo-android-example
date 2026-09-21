@@ -26,6 +26,10 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Roadmap destination hosting the Fedo feedback board (`FedoFeedbackScreen`),
+  which owns its internal navigation; backing out of its root returns to the
+  models list. Without an API key the tab explains how to add one instead of
+  disappearing by @mabd-agent
 - `specs/fedo-showcase.md`: where each Fedo surface sits, what demo sign-in
   sets, what the app does without an API key, and why Fedo failures get no
   invented error UI by @mabd-agent

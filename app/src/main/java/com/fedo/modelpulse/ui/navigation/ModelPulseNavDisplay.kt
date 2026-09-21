@@ -19,8 +19,10 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.fedo.modelpulse.R
+import com.fedo.modelpulse.FedoIntegration
 import com.fedo.modelpulse.ui.detail.ModelDetailRoute
 import com.fedo.modelpulse.ui.models.ModelsRoute
+import com.fedo.modelpulse.ui.roadmap.RoadmapScreen
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -65,7 +67,12 @@ fun ModelPulseNavDisplay(modifier: Modifier = Modifier) {
                     )
                 }
                 // ponytail: placeholders until uyb.1 and uyb.3 fill them in.
-                entry<RoadmapKey> { Placeholder(stringResource(R.string.nav_roadmap)) }
+                entry<RoadmapKey> {
+                    RoadmapScreen(
+                        isConfigured = FedoIntegration.isConfigured,
+                        onBack = { backStack.removeLastOrNull() },
+                    )
+                }
                 entry<SettingsKey> { Placeholder(stringResource(R.string.nav_settings)) }
             },
             modifier = Modifier.padding(innerPadding),
