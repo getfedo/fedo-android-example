@@ -2,7 +2,9 @@ package com.fedo.modelpulse.ui.models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fedo.modelpulse.FedoIntegration
 import com.fedo.modelpulse.data.ModelsRepository
+import com.fedo.sdk.Fedo
 import java.io.IOException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,6 +15,11 @@ import kotlinx.coroutines.launch
 
 class ModelsViewModel(
     private val repository: ModelsRepository,
+    /**
+     * Where the provider filter is reported to Fedo. Injected so the rule is
+     * unit tested without the SDK, which is a singleton object.
+     */
+    private val reportFavoriteProvider: (String?) -> Unit = ::reportFavoriteProviderToFedo,
 ) : ViewModel() {
 
     private val loadState = MutableStateFlow<LoadState>(LoadState.Loading)
@@ -54,12 +61,27 @@ class ModelsViewModel(
     /** Null clears the filter. */
     fun onProviderChange(slug: String?) {
         provider.value = slug
+        reportFavoriteProvider(slug)
     }
 
     private companion object {
         const val STOP_TIMEOUT_MILLIS = 5_000L
     }
 }
+
+/**
+ * Fedo user properties are user-level and last-write-wins, so the newest pick
+ * is the whole story: there is no list to append to and no need to clear one
+ * key before writing another. A cleared filter writes an empty value rather
+ * than leaving the previous provider behind as the user's favourite.
+ */
+private fun reportFavoriteProviderToFedo(slug: String?) {
+    if (!FedoIntegration.isConfigured) return
+
+    Fedo.setUserProperty(FAVORITE_PROVIDER, slug.orEmpty())
+}
+
+private const val FAVORITE_PROVIDER = "favorite_provider"
 
 /**
  * The one place a throwable becomes something a person reads. The data layer

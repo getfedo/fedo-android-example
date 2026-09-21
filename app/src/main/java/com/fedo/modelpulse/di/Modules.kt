@@ -17,7 +17,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -33,7 +32,8 @@ val dataModule = module {
 }
 
 val uiModule = module {
-    viewModelOf(::ModelsViewModel)
+    // Not viewModelOf: the ViewModel's Fedo hook is a defaulted parameter.
+    viewModel { ModelsViewModel(get()) }
     // The nav key is the argument holder; Navigation 3 has no toRoute().
     viewModel { (key: ModelDetailKey) -> ModelDetailViewModel(key, get()) }
     single { DemoUserStore(androidContext()) }

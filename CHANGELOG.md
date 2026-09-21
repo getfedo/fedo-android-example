@@ -26,6 +26,9 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- The provider filter now records `favorite_provider` with
+  `Fedo.setUserProperty`, and writes an empty value when the filter is cleared
+  so a stale favourite cannot linger by @mabd-agent
 - GitHub Actions CI: a secrets guard job, then assemble, unit tests and lint on
   a keyless checkout, with every action pinned by commit SHA. Kotlin warnings
   are errors in CI via `-PwarningsAsErrors=true` by @mabd-agent
