@@ -26,6 +26,8 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- A failed refresh now shows a snackbar with Retry instead of an item at the
+  top of the list, so it is visible wherever the list is scrolled by @mabd-agent
 - MIT `LICENSE` (Copyright 2026 Fedo) and a short `README.md` linking it, with
   a note that the Fedo SDK ships under its own license by @mabd-agent
 - `app/src/test/resources/models.json`: a trimmed real OpenRouter response
