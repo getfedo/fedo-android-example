@@ -1,0 +1,6 @@
+# Copy this file to local.properties (which is gitignored) and fill in your key.
+# Get one from the Fedo dashboard at https://app.getfedo.com.
+#
+# Leaving it out is fine: the app builds and runs without the key, logs a hint
+# naming this file, and skips Fedo initialization.
+FEDO_API_KEY=

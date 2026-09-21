@@ -1,0 +1,24 @@
+# Constitution
+- Single activity, unidirectional data flow. Each screen = stateless
+  `Screen(state, onAction)` + ViewModel exposing `StateFlow<UiState>`.
+- Modules: single `:app` module.
+- No business logic in composables. Parsing, formatting and filtering are
+  pure functions, unit tested.
+- DI: Koin. Navigation: navigation-3 (`NavDisplay` + `@Serializable` `NavKey`
+  back stack). HTTP: OkHttp. JSON: kotlinx.serialization.
+- No offline support. Remote is the source of truth; the repository caches
+  the last successful response in memory for the session. No Room, no
+  DataStore, no WorkManager.
+- UI: use material 3 expressive ui elements.
+- A failed refresh never wipes loaded data.
+- Every screen composable has a `@Preview` per `UiState`.
+- Every acceptance criterion has an ID (`AC-1`, `AC-2`, …) and maps to ≥1
+  test named after that ID.
+- Fedo SDK: `com.getfedo:sdk-android:0.4.0` (Maven Central).
+- Secrets (Fedo API key) come from gitignored `local.properties`. Never
+  committed, never hardcoded, never logged.
+- Java source/target 21. Kotlin 2.3.21 (set by the Fedo SDK's floor —
+  see decisions/0001-library-versions.md).
+- Per-bead gate = `./gradlew :app:testDebugUnitTest :app:lintDebug` passes.
+- Done = `./gradlew build test lint` passes.
+- Emulator: always prefer any adb connected device over emulator.
