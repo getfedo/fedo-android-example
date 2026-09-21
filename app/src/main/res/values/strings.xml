@@ -25,4 +25,15 @@
     <string name="nav_models">Models</string>
     <string name="nav_roadmap">Roadmap</string>
     <string name="nav_settings">Settings</string>
+
+    <!-- Model detail -->
+    <string name="detail_back">Back</string>
+    <string name="detail_copy_id">Copy</string>
+    <string name="detail_input_price">Input</string>
+    <string name="detail_output_price">Output</string>
+    <string name="detail_context">Context</string>
+    <string name="detail_released">Released</string>
+    <string name="detail_modalities">Inputs</string>
+    <string name="detail_modalities_unknown">Unknown</string>
+    <string name="detail_not_found">That model is no longer in the catalogue.</string>
 </resources>
