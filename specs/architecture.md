@@ -87,8 +87,8 @@ internal class DefaultModelsRepository(
     override suspend fun refresh(): Result<Unit> {
         inFlight?.cancel()
         val job = scope.async {
-            runCatching { remote.getModels() }
-                .onSuccess { models -> _models.value = models.sortedByDescending(AiModel::created) }
+            remote.getModels()
+                .onSuccess { models -> _models.value = models }
                 .map { }
         }
         inFlight = job
@@ -116,21 +116,30 @@ bead requires state that must outlive the process.
 internal class OpenRouterDataSource(
     private val client: OkHttpClient,
     private val json: Json,
+    private val baseUrl: String = OPEN_ROUTER_MODELS_URL,
 ) {
+    /** Models, newest first. Never throws; every failure comes back as one. */
     suspend fun getModels(): Result<List<AiModel>> = withContext(Dispatchers.IO) {
-        val request = Request.Builder()
-            .url("https://openrouter.ai/api/v1/models")
-            .build()
+        val request = Request.Builder().url(baseUrl).build()
 
-        return@withContext client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) Result.failure(Exception("HTTP ${response.code}"))
-            val body = response.body.string()
-            val data = json.decodeFromString<ModelsResponse>(body).data.map(NetworkModel::asExternalModel)
-            return Result.success(data)
+        runCatching {
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
+                json.decodeFromString<ModelsResponse>(response.body.string())
+                    .data
+                    .map(NetworkModel::asExternalModel)
+                    .sortedByDescending(AiModel::created)
+            }
         }
     }
 }
 ```
+
+`runCatching` is what keeps the promise in [Errors](#errors): a non-2xx
+response, a dropped connection and a body that will not decode all leave as
+`Result.failure`. Sorting happens here, so everything downstream can treat
+the list as newest first. `baseUrl` is a constructor parameter only so tests
+can point it at a local server — see [testing.md](testing.md).
 
 `Json` is configured once in the Koin module with `ignoreUnknownKeys = true`
 — OpenRouter adds fields without warning.
@@ -144,21 +153,24 @@ internal to the data layer. Domain models are what the UI sees.
 @Serializable
 internal data class ModelsResponse(val data: List<NetworkModel>)
 
+// Only the id is required. OpenRouter has shipped entries with no pricing
+// block and no architecture, and one missing field must not cost the other
+// 445 models.
 @Serializable
 internal data class NetworkModel(
     val id: String,
-    val name: String,
-    val created: Long,                       // unix seconds
+    val name: String = "",
+    val created: Long = 0L,                  // unix seconds
     val description: String? = null,
     @SerialName("context_length") val contextLength: Int? = null,
-    val pricing: NetworkPricing,
+    val pricing: NetworkPricing? = null,
     val architecture: NetworkArchitecture? = null,
 )
 
 @Serializable
 internal data class NetworkPricing(
-    val prompt: String,                      // USD per token, as a STRING
-    val completion: String,                  // "0" = free, "-1" = variable
+    val prompt: String? = null,              // USD per token, as a STRING
+    val completion: String? = null,          // "0" = free, "-1" = variable
 )
 
 @Serializable
@@ -167,18 +179,25 @@ internal data class NetworkArchitecture(
 )
 
 // Network model → domain model
-internal fun NetworkModel.asExternalModel() = AiModel(
-    id = id.removePrefix("~"),               // ids are sometimes "~" prefixed
-    providerSlug = id.substringBefore('/'),
-    shortName = name.substringAfter(": ", name),
-    providerName = name.substringBefore(": ", ""),
-    created = Instant.ofEpochSecond(created),
-    description = description.orEmpty(),
-    contextLength = contextLength,
-    promptPrice = Price.parse(pricing.prompt),
-    completionPrice = Price.parse(pricing.completion),
-    inputModalities = architecture?.inputModalities.orEmpty(),
-)
+internal fun NetworkModel.asExternalModel(): AiModel {
+    val cleanId = id.removePrefix("~")       // ids are sometimes "~" prefixed
+    return AiModel(
+        id = cleanId,
+        // Lowercased so the grouping key survives a provider renaming its
+        // casing; "Anthropic/…" and "anthropic/…" are one provider.
+        providerSlug = cleanId.substringBefore('/').lowercase(),
+        shortName = name.substringAfter(": ", name).ifBlank { cleanId },
+        // Names are usually "Provider: Model". When one is not, the id prefix
+        // is the next best label — never an empty provider.
+        providerName = name.substringBefore(": ", "").ifBlank { cleanId.substringBefore('/') },
+        created = Instant.ofEpochSecond(created),
+        description = description.orEmpty(),
+        contextLength = contextLength,
+        promptPrice = Price.parse(pricing?.prompt.orEmpty()),
+        completionPrice = Price.parse(pricing?.completion.orEmpty()),
+        inputModalities = architecture?.inputModalities.orEmpty(),
+    )
+}
 ```
 
 Parsing and formatting (`Price.parse`, relative dates, context labels,
@@ -304,8 +323,8 @@ val uiModule = module {
 2. `ModelsRepository.refresh()` cancels any in-flight load and starts a new one
 3. `OpenRouterDataSource` performs the OkHttp call
 4. kotlinx.serialization decodes the body into `NetworkModel`s
-5. DTOs map to `AiModel`s and are sorted newest first
-6. The repository writes them to its in-memory `StateFlow`
+5. DTOs map to `AiModel`s and the data source sorts them newest first
+6. The repository writes the list to its in-memory `StateFlow` as it comes
 7. The ViewModel combines models + query + filter + load state
 8. `toUiState` produces `Success`
 9. The screen recomposes

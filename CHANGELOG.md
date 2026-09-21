@@ -31,6 +31,11 @@ Targets Fedo SDK `0.4.0`.
 
 ### Changed
 
+- `specs/architecture.md` now matches the shipped data layer: the data source
+  and repository snippets compile, sorting is documented as the data source's
+  job, and the mapping shows the lowercased provider slug and the id-prefix
+  fallback for the provider name by @mabd-agent
+- `OpenRouterDataSource` is `internal`, as the architecture spec states by @mabd-agent
 - R8 is enabled for the release build, which strips the Fedo SDK's leaked test
   dependencies from the release APK: 46 MB debug against 2.5 MB release.
   Recorded in `specs/decisions/0002-release-optimization.md` by @mabd-agent

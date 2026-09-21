@@ -17,7 +17,7 @@ const val OPEN_ROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models"
  * Fetches the OpenRouter catalogue. [baseUrl] is a parameter so tests can point
  * it at a local server; production uses the default.
  */
-class OpenRouterDataSource(
+internal class OpenRouterDataSource(
     private val client: OkHttpClient = OkHttpClient(),
     private val json: Json = Json { ignoreUnknownKeys = true },
     private val baseUrl: String = OPEN_ROUTER_MODELS_URL,
