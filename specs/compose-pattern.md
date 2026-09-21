@@ -228,7 +228,7 @@ fun ModelPulseNavDisplay(modifier: Modifier = Modifier) {
 
     NavDisplay(
         backStack = backStack,
-        onBack = { count -> repeat(count) { backStack.removeLastOrNull() } },
+        onBack = { backStack.removeLastOrNull() },
         // rememberViewModelStoreNavEntryDecorator scopes a ViewModel to each
         // entry; adding it means re-declaring the default decorators too.
         entryDecorators = listOf(

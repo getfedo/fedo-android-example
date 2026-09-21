@@ -6,6 +6,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object ModelsKey : NavKey
 
+/** The argument holder for the detail screen; Koin injects it into the VM. */
+@Serializable
+data class ModelDetailKey(val id: String) : NavKey
+
 @Serializable
 data object RoadmapKey : NavKey
 

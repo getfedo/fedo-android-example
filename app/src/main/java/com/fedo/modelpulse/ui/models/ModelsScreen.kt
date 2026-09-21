@@ -61,6 +61,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun ModelsRoute(
+    onModelClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ModelsViewModel = koinViewModel(),
 ) {
@@ -68,6 +69,7 @@ internal fun ModelsRoute(
 
     ModelsScreen(
         uiState = uiState,
+        onModelClick = onModelClick,
         onRefresh = viewModel::refresh,
         onQueryChange = viewModel::onQueryChange,
         onProviderChange = viewModel::onProviderChange,
@@ -79,6 +81,7 @@ internal fun ModelsRoute(
 @Composable
 internal fun ModelsScreen(
     uiState: ModelsUiState,
+    onModelClick: (String) -> Unit,
     onRefresh: () -> Unit,
     onQueryChange: (String) -> Unit,
     onProviderChange: (String?) -> Unit,
@@ -120,6 +123,7 @@ internal fun ModelsScreen(
             } else {
                 ModelsContent(
                     state = uiState,
+                    onModelClick = onModelClick,
                     onRefresh = onRefresh,
                     onQueryChange = onQueryChange,
                     onProviderChange = onProviderChange,
@@ -134,6 +138,7 @@ internal fun ModelsScreen(
 @Composable
 private fun ModelsContent(
     state: ModelsUiState.Success,
+    onModelClick: (String) -> Unit,
     onRefresh: () -> Unit,
     onQueryChange: (String) -> Unit,
     onProviderChange: (String?) -> Unit,
@@ -205,6 +210,7 @@ private fun ModelsContent(
                 items(items = state.models, key = AiModel::id) { model ->
                     ModelCard(
                         model = model,
+                        onClick = { onModelClick(model.id) },
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
@@ -287,8 +293,8 @@ private fun ProviderFilters(
 }
 
 @Composable
-private fun ModelCard(model: AiModel, modifier: Modifier = Modifier) {
-    Card(modifier = modifier.fillMaxWidth()) {
+private fun ModelCard(model: AiModel, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -416,6 +422,7 @@ private fun ModelsScreenPreview(
     ModelPulseTheme {
         ModelsScreen(
             uiState = uiState,
+            onModelClick = {},
             onRefresh = {},
             onQueryChange = {},
             onProviderChange = {},
