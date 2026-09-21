@@ -26,6 +26,11 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- `app/src/test/resources/models.json`: a trimmed real OpenRouter response
+  covering the decoder's awkward cases — a `~`-prefixed id, `"0"` and `"-1"`
+  prices, a null `context_length`, a missing `architecture` block and an
+  unknown field — with tests that decode it through the production `Json`
+  config by @mabd-agent
 - Fedo SDK test dependencies (`kotlin-test`, `kotlin-test-junit`,
   `ktor-client-mock`) excluded from the app's runtime classpath: the SDK
   publishes them at runtime scope, so they were dexed into the APK. The debug
