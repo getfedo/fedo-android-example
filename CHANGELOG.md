@@ -14,14 +14,14 @@ Targets Fedo SDK `0.4.0`.
 ### Added
 
 - Android project skeleton: single `:app` module, Compose, Material 3,
-  `minSdk` 29 / `targetSdk` 37, Java 21.
+  `minSdk` 29 / `targetSdk` 37, Java 21 by @mabd-agent
 - Fedo SDK `com.getfedo:sdk-android:0.4.0`, initialized at app startup when an
-  API key is present. Without a key the app runs and logs a hint instead.
+  API key is present. Without a key the app runs and logs a hint instead by @mabd-agent
 - `BuildConfig.FEDO_API_KEY`, read from the gitignored `local.properties` and
   empty by default so a clean clone still builds. Documented in
-  `local.properties.example`.
-- OkHttp and kotlinx.serialization for the OpenRouter client.
+  `local.properties.example` @mabd-agent
+- OkHttp and kotlinx.serialization for the OpenRouter client by @mabd-agent
 - Project specs under `specs/`: constitution, architecture, Compose patterns,
-  testing, and recorded decisions.
+  testing, and recorded decisions by @mabd-agent
 
 [Unreleased]: https://github.com/getfedo/fedo-android-example/commits/main
