@@ -16,7 +16,7 @@ nothing more.
 | `Fedo.setUserEmail(String)` | Demo sign-in |
 | `Fedo.setUserProperty(key, value)` | `favorite_provider` from the models filter |
 | `Fedo.logout()` | Demo sign-out |
-| `FedoFeedbackScreen(modifier, slots, style, onBack)` | The Roadmap destination |
+| `FedoFeedbackScreen(modifier, slots, style, onDismiss)` | The Roadmap destination |
 | `FedoCreateFeedbackSheet(onDismiss, modifier)` | Contextual feedback |
 
 Everything else in the artifact is `internal`. All of these return `Unit`.
@@ -32,9 +32,9 @@ the app (`backStackFor()` in `ui/navigation`).
 
 Hosts `FedoFeedbackScreen` full-bleed, below our `NavigationBar`. The screen
 carries its own `NavHostController` internally: it owns its list → detail →
-compose navigation and its own back handling. Our `onBack` lambda pops *our*
-back stack, and the SDK only calls it when its internal stack is already at
-its root. ModelPulse must not wrap the screen in another top app bar — the
+compose navigation and its own back handling. Our `onDismiss` lambda pops
+*our* back stack, and the SDK only calls it when its internal stack is
+already at its root. ModelPulse must not wrap the screen in another top app bar — the
 SDK draws its own.
 
 ### Contextual feedback — `FedoCreateFeedbackSheet`

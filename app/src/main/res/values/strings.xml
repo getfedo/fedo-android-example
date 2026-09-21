@@ -36,4 +36,9 @@
     <string name="detail_modalities">Inputs</string>
     <string name="detail_modalities_unknown">Unknown</string>
     <string name="detail_not_found">That model is no longer in the catalogue.</string>
+
+    <!-- Roadmap -->
+    <string name="roadmap_not_configured_title">Fedo not configured</string>
+    <string name="roadmap_not_configured_body">The roadmap board comes from the Fedo SDK. Add your API key to local.properties and rebuild to see it.</string>
+    <string name="roadmap_not_configured_snippet">FEDO_API_KEY=your-key-here</string>
 </resources>
