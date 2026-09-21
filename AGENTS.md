@@ -28,6 +28,11 @@ Workflow:
 - Beads data is local until pushed: `bd dolt push` / `bd dolt pull`. No Dolt
   remote is configured yet, so `.beads/issues.jsonl` is currently the only
   copy that travels with git — and it is an export, not the source of truth.
+- when task is finished commit changed but don't push anywhere
+- while working don't show me anything in terminal session unless you want to ask
+something or results after you finished. I don't want to see what you are working on
+or what you are changing. I will check that in PR reivew anyway. So save tokens and 
+don't show them
 
 ## Build & Test
 
