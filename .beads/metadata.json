@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "fedo_android_example",
+  "project_id": "867115d6-c12f-4ac1-83fe-2bde28e6dbd1"
+}
