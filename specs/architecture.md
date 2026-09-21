@@ -117,15 +117,16 @@ internal class OpenRouterDataSource(
     private val client: OkHttpClient,
     private val json: Json,
 ) {
-    suspend fun getModels(): List<AiModel> = withContext(Dispatchers.IO) {
+    suspend fun getModels(): Result<List<AiModel>> = withContext(Dispatchers.IO) {
         val request = Request.Builder()
             .url("https://openrouter.ai/api/v1/models")
             .build()
 
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) error("HTTP ${response.code}")
+        return@withContext client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) Result.failure(Exception("HTTP ${response.code}"))
             val body = response.body.string()
-            json.decodeFromString<ModelsResponse>(body).data.map(NetworkModel::asExternalModel)
+            val data = json.decodeFromString<ModelsResponse>(body).data.map(NetworkModel::asExternalModel)
+            return Result.success(data)
         }
     }
 }

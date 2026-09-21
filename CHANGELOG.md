@@ -23,5 +23,16 @@ Targets Fedo SDK `0.4.0`.
 - OkHttp and kotlinx.serialization for the OpenRouter client by @mabd-agent
 - Project specs under `specs/`: constitution, architecture, Compose patterns,
   testing, and recorded decisions by @mabd-agent
+- OpenRouter data layer: `AiModel` with the derived provider, short name,
+  prices and context window, plus `OpenRouterDataSource.getModels()` returning
+  the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Pure formatters `perMillionLabel()`, `contextLabel()` and `relativeLabel()`,
+  covering "Free", "Variable" and the "<$0.01" floor, with unit tests by @mabd-agent
+
+### Changed
+
+- R8 is enabled for the release build, which strips the Fedo SDK's leaked test
+  dependencies from the release APK: 46 MB debug against 2.5 MB release.
+  Recorded in `specs/decisions/0002-release-optimization.md` by @mabd-agent
 
 [Unreleased]: https://github.com/getfedo/fedo-android-example/commits/main
