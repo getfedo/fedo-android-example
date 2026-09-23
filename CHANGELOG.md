@@ -139,6 +139,10 @@ contextual feedback sheet on the other.
 
 ### Changed
 
+- `specs/screenshots.md` and `scripts/screenshots.sh`: one command retakes
+  every README screenshot, dark and light, per screen by @mabd-agent
+- README screenshots retaken on a phone, dark and light, showing the unified
+  top app bars by @mabd-agent
 - `specs/architecture.md` now matches the shipped data layer: the data source
   and repository snippets compile, sorting is documented as the data source's
   job, and the mapping shows the lowercased provider slug and the id-prefix

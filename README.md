@@ -33,7 +33,7 @@ Single `:app` module. Compose, Koin, OkHttp, kotlinx.serialization and Navigatio
 
 </details>
 
-Captured on a tablet with a Fedo API key configured. The colours come from the
+Captured on a phone (Galaxy A51) with a Fedo API key configured. The colours come from the
 device wallpaper: the app uses dynamic colour on API 31+ and the Material
 baseline schemes below that, so your build will not look identical.
 
