@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.fedo.modelpulse.R
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import com.fedo.sdk.ui.FedoFeedbackScreen
+import com.fedo.sdk.ui.FedoFeedbackScreenDefaults
+import com.fedo.sdk.ui.FedoFeedbackScreenSlots
 
 /**
  * The Roadmap destination. With a key it is the SDK's board, which owns its
@@ -33,7 +35,13 @@ internal fun RoadmapScreen(
     modifier: Modifier = Modifier,
 ) {
     if (isConfigured) {
-        FedoFeedbackScreen(modifier = modifier.fillMaxSize(), onDismiss = onBack)
+        FedoFeedbackScreen(
+            modifier = modifier.fillMaxSize(),
+            onDismiss = onBack,
+            slots = FedoFeedbackScreenDefaults.slots().copy(
+                backButtonIcon = null
+            )
+        )
     } else {
         NotConfiguredState(modifier)
     }
