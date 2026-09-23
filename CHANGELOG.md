@@ -9,7 +9,12 @@ Each release states the Fedo SDK version it targets.
 
 ## [Unreleased]
 
-Targets Fedo SDK `0.4.0`.
+Targets Fedo SDK `0.4.1`.
+
+The ModelPulse core app and the Fedo SDK showcase are both feature complete:
+catalogue, search, provider filter, detail, navigation and theme on one side;
+roadmap board, settings with demo sign-in, `favorite_provider` and the
+contextual feedback sheet on the other.
 
 ### Added
 
