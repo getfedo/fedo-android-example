@@ -62,6 +62,7 @@ import com.fedo.modelpulse.data.contextLabel
 import com.fedo.modelpulse.data.perMillionLabel
 import com.fedo.modelpulse.data.providerFilters
 import com.fedo.modelpulse.data.relativeLabel
+import com.fedo.modelpulse.ui.common.ModelPulseTopBar
 import com.fedo.modelpulse.ui.mergePaddingValues
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import com.fedo.sdk.ui.FedoCreateFeedbackSheet
@@ -134,8 +135,8 @@ internal fun ModelsScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            MediumFlexibleTopAppBar(
-                title = { Text(stringResource(R.string.models_title)) },
+            ModelPulseTopBar(
+                title = stringResource(R.string.models_title),
                 scrollBehavior = scrollBehavior,
             )
         },
