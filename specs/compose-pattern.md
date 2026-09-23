@@ -70,6 +70,33 @@ internal fun ModelsScreen(
 - Previews work without Koin
 - Navigation stays in one place
 
+## Top Bar
+```kotlin
+
+@Composable
+internal fun ModelsScreen(
+    // ... 
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            ModelPulseTopBar(
+                title = stringResource(R.string.something),
+                navigationIcon = { TopBarBackButton(onBack) },
+            )
+        },
+    ) { innerPadding ->
+        // screen content
+    }
+}
+```
+Always use `ModelPulseTopBar` for top bar and `TopBarBackButton` for top bar navigation icon
+
+## 
+
 ## State Management
 
 ### Sealed Interface for UI State
