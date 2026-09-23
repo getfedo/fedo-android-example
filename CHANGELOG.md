@@ -26,6 +26,10 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- `specs/decisions/0005-features-live-in-beads.md`: one feature workflow —
+  beads describe features, `specs/` holds only what outlives them. The agent
+  instructions no longer reference a `specs/features/` directory that was
+  never created by @mabd-agent
 - Constitution rules for user-facing strings and the minimum accessibility bar:
   all copy in `strings.xml`, ViewModels carry a `@StringRes Int`, actionable
   icon-only controls carry a `contentDescription`, and UI tests locate nodes by
