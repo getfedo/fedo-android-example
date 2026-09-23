@@ -112,6 +112,13 @@ Never commit `local.properties` or any API key, and never paste keys in issues, 
 
 Maintainers plan work with [beads](https://github.com/gastownhall/beads) (`bd`); its data lives in `.beads/`. You do not need it: external contributors can use [GitHub issues](https://github.com/getfedo/fedo-android-example/issues).
 
+## Remotes
+
+Development happens on the Gitea remote; GitHub is where the repository is
+published, the same arrangement as the iOS example. CI, issue forms, the
+security advisory link and the README badge all point at the GitHub home, so
+they only come alive once the code is pushed there.
+
 ## Where to report
 
 - Bugs and ideas for this example app: [GitHub issues](https://github.com/getfedo/fedo-android-example/issues) in this repository.
