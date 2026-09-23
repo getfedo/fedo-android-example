@@ -1,5 +1,6 @@
 package com.fedo.modelpulse.ui.models
 
+import androidx.annotation.StringRes
 import com.fedo.modelpulse.data.AiModel
 import com.fedo.modelpulse.data.ProviderFilter
 import com.fedo.modelpulse.data.filterBy
@@ -11,7 +12,7 @@ sealed interface ModelsUiState {
     data object Loading : ModelsUiState
 
     /** Nothing to show. A failed refresh with data present is not this. */
-    data class Error(val message: String) : ModelsUiState
+    data class Error(@param:StringRes val messageRes: Int) : ModelsUiState
 
     data class Success(
         /** What the search and provider filter left. */
@@ -22,7 +23,7 @@ sealed interface ModelsUiState {
         val selectedProvider: String? = null,
         val isRefreshing: Boolean = false,
         /** Set when a refresh failed while data was already on screen. */
-        val refreshError: String? = null,
+        @param:StringRes val refreshErrorRes: Int? = null,
     ) : ModelsUiState {
 
         val isFiltered: Boolean get() = query.isNotBlank() || selectedProvider != null
@@ -37,7 +38,7 @@ internal sealed interface LoadState {
     data object Loading : LoadState
     data object Refreshing : LoadState
     data object Idle : LoadState
-    data class Failed(val message: String) : LoadState
+    data class Failed(@param:StringRes val messageRes: Int) : LoadState
 }
 
 /**
@@ -62,11 +63,11 @@ internal fun toUiState(
             providers = providers,
             selectedProvider = selectedEntry?.key,
             isRefreshing = load is LoadState.Refreshing,
-            refreshError = (load as? LoadState.Failed)?.message,
+            refreshErrorRes = (load as? LoadState.Failed)?.messageRes,
         )
     }
 
-    load is LoadState.Failed -> ModelsUiState.Error(load.message)
+    load is LoadState.Failed -> ModelsUiState.Error(load.messageRes)
     load is LoadState.Loading || load is LoadState.Refreshing -> ModelsUiState.Loading
     // Loaded, and the catalogue really is empty.
     else -> ModelsUiState.Success(models = emptyList())

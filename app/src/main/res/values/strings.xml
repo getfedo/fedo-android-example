@@ -8,6 +8,8 @@
     <string name="models_refresh">Refresh</string>
     <string name="models_empty_title">No models</string>
     <string name="models_empty_body">OpenRouter returned an empty catalogue.</string>
+    <string name="models_error_offline">Couldn\'t reach OpenRouter. Check your connection.</string>
+    <string name="models_error_generic">Something went wrong loading the catalogue.</string>
     <string name="models_refresh_failed">Showing the models loaded earlier. %1$s</string>
     <string name="models_context">Context %1$s</string>
     <string name="models_input_price">%1$s / 1M in</string>

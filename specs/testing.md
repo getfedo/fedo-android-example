@@ -332,7 +332,14 @@ class ModelsScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Retry").performClick()
+        // Resolved from the same resource the screen uses — never a copied
+        // literal, so renaming the string cannot leave a test asserting stale
+        // copy (constitution).
+        val retry = InstrumentationRegistry.getInstrumentation()
+            .targetContext
+            .getString(R.string.models_retry)
+
+        composeTestRule.onNodeWithText(retry).performClick()
 
         assertTrue(retried)
     }
