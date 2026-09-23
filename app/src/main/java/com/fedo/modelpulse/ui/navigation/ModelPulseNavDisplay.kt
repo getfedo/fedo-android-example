@@ -86,24 +86,31 @@ fun ModelPulseNavDisplay(modifier: Modifier = Modifier) {
             ),
             entryProvider = entryProvider {
                 entry<ModelsKey> {
-                    ModelsRoute(onModelClick = { id -> backStack.add(ModelDetailKey(id)) })
+                    ModelsRoute(
+                        onModelClick = { id -> backStack.add(ModelDetailKey(id)) },
+                        contentPadding = innerPadding
+                    )
                 }
                 entry<ModelDetailKey> { key ->
                     ModelDetailRoute(
                         onBackClick = { backStack.removeLastOrNull() },
                         viewModel = koinViewModel { parametersOf(key) },
+                        contentPadding = innerPadding
                     )
                 }
-                // ponytail: placeholders until uyb.1 and uyb.3 fill them in.
                 entry<RoadmapKey> {
                     RoadmapScreen(
                         isConfigured = FedoIntegration.isConfigured,
                         onBack = { backStack.removeLastOrNull() },
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
-                entry<SettingsKey> { SettingsRoute() }
+                entry<SettingsKey> {
+                    SettingsRoute(
+                        contentPadding = innerPadding
+                    )
+                }
             },
-            modifier = Modifier.padding(innerPadding),
         )
     }
 }

@@ -3,6 +3,7 @@ package com.fedo.modelpulse.ui.settings
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +28,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fedo.modelpulse.R
+import com.fedo.modelpulse.ui.mergePaddingValues
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,6 +36,7 @@ import org.koin.androidx.compose.koinViewModel
 internal fun SettingsRoute(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -43,6 +47,7 @@ internal fun SettingsRoute(
         onSignIn = viewModel::signIn,
         onSignOut = viewModel::signOut,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -54,29 +59,39 @@ internal fun SettingsScreen(
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues()
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.settings_title),
-            style = MaterialTheme.typography.headlineSmall,
-        )
+    Scaffold(
+        modifier = modifier,
+    ) { innerPadding ->
+        val mergedContentPadding = mergePaddingValues(innerPadding, contentPadding)
 
-        SdkStatusCard(isConfigured = uiState.isConfigured)
+        Column(
 
-        DemoAccountCard(
-            uiState = uiState,
-            onNameChange = onNameChange,
-            onEmailChange = onEmailChange,
-            onSignIn = onSignIn,
-            onSignOut = onSignOut,
-        )
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(mergedContentPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.settings_title),
+                style = MaterialTheme.typography.headlineSmall,
+            )
+
+            SdkStatusCard(isConfigured = uiState.isConfigured)
+
+            DemoAccountCard(
+                uiState = uiState,
+                onNameChange = onNameChange,
+                onEmailChange = onEmailChange,
+                onSignIn = onSignIn,
+                onSignOut = onSignOut,
+            )
+        }
     }
+
 }
 
 @Composable
