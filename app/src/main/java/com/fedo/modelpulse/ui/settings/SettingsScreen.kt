@@ -11,15 +11,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +31,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fedo.modelpulse.R
+import com.fedo.modelpulse.ui.common.ModelPulseTopBar
 import com.fedo.modelpulse.ui.mergePaddingValues
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import org.koin.androidx.compose.koinViewModel
@@ -51,6 +55,7 @@ internal fun SettingsRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
     uiState: SettingsUiState,
@@ -61,25 +66,28 @@ internal fun SettingsScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues()
 ) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     Scaffold(
         modifier = modifier,
+        topBar = {
+            ModelPulseTopBar(
+                title = stringResource(R.string.settings_title),
+                scrollBehavior = scrollBehavior
+            )
+        }
     ) { innerPadding ->
         val mergedContentPadding = mergePaddingValues(innerPadding, contentPadding)
 
         Column(
-
             modifier = Modifier
                 .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .verticalScroll(rememberScrollState())
                 .padding(mergedContentPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(
-                text = stringResource(R.string.settings_title),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-
             SdkStatusCard(isConfigured = uiState.isConfigured)
 
             DemoAccountCard(

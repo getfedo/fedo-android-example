@@ -20,15 +20,15 @@ Single `:app` module. Compose, Koin, OkHttp, kotlinx.serialization and Navigatio
 
 ## Screenshots
 
-| Models | Model detail | Roadmap | Settings |
-| --- | --- | --- | --- |
+| Models                                                                                                               | Model detail                                                                                                        | Roadmap                                                                                                  | Settings                                                                                                |
+|----------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
 | <img src="docs/images/models-list.png" width="180" alt="Models list, newest first, with search and provider filter"> | <img src="docs/images/model-detail.png" width="180" alt="Model detail with prices, context window and copyable id"> | <img src="docs/images/roadmap.png" width="180" alt="The Fedo feedback board in the Roadmap destination"> | <img src="docs/images/settings.png" width="180" alt="Settings showing SDK status and the demo account"> |
 
 <details>
 <summary>Light theme</summary>
 
-| Models | Model detail | Roadmap | Settings |
-| --- | --- | --- | --- |
+| Models                                                                                     | Model detail                                                                                 | Roadmap                                                                                            | Settings                                                                             |
+|--------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | <img src="docs/images/models-list-light.png" width="180" alt="Models list in light theme"> | <img src="docs/images/model-detail-light.png" width="180" alt="Model detail in light theme"> | <img src="docs/images/roadmap-light.png" width="180" alt="The Fedo feedback board in light theme"> | <img src="docs/images/settings-light.png" width="180" alt="Settings in light theme"> |
 
 </details>
@@ -62,14 +62,14 @@ No key yet? The app still builds and runs: the models list, search, filter and d
 
 ## Where Fedo is used
 
-| API | File | What it does |
-| --- | --- | --- |
-| `Fedo.initialize(context, apiKey) { }` | [`ModelPulseApplication.kt`](app/src/main/java/com/fedo/modelpulse/ModelPulseApplication.kt) | Initializes the SDK once at startup, with debug logging in debug builds. Skipped entirely when no key is configured. |
-| `FedoFeedbackScreen(onDismiss = …)` | [`RoadmapScreen.kt`](app/src/main/java/com/fedo/modelpulse/ui/roadmap/RoadmapScreen.kt) | The Roadmap destination: the whole feedback board. It owns its internal navigation, so `onDismiss` only fires at the board root and pops the app's own back stack. |
+| API                                                                           | File                                                                                             | What it does                                                                                                                                                                                                            |
+|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Fedo.initialize(context, apiKey) { }`                                        | [`ModelPulseApplication.kt`](app/src/main/java/com/fedo/modelpulse/ModelPulseApplication.kt)     | Initializes the SDK once at startup, with debug logging in debug builds. Skipped entirely when no key is configured.                                                                                                    |
+| `FedoFeedbackScreen(onDismiss = …)`                                           | [`RoadmapScreen.kt`](app/src/main/java/com/fedo/modelpulse/ui/roadmap/RoadmapScreen.kt)          | The Roadmap destination: the whole feedback board. It owns its internal navigation, so `onDismiss` only fires at the board root and pops the app's own back stack.                                                      |
 | `Fedo.setUserID(…)`<br>`Fedo.setUserDisplayName(…)`<br>`Fedo.setUserEmail(…)` | [`SettingsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/settings/SettingsViewModel.kt) | Demo sign-in. Feedback, votes and comments left as a guest move to the signed-in account. The demo id is a generated `demo-` UUID, never the email — a real app passes its own backend user id and keeps PII out of it. |
-| `Fedo.setUserProperty("favorite_provider", …)` | [`ModelsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/models/ModelsViewModel.kt) | Records the provider picked in the filter as a user property, so feedback can be segmented by what the user cares about. Properties are user-level and last-write-wins; clearing the filter writes an empty value. |
-| `FedoCreateFeedbackSheet(onDismiss = …)` | [`ModelsScreen.kt`](app/src/main/java/com/fedo/modelpulse/ui/models/ModelsScreen.kt) | The contextual sheet: "Missing a model? Request it" in the no-results state and "Report a problem" in the load-error state. Both appear only when a key is configured. |
-| `Fedo.logout()` | [`SettingsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/settings/SettingsViewModel.kt) | Demo sign-out: clears the identity and starts a new guest. |
+| `Fedo.setUserProperty("favorite_provider", …)`                                | [`ModelsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/models/ModelsViewModel.kt)       | Records the provider picked in the filter as a user property, so feedback can be segmented by what the user cares about. Properties are user-level and last-write-wins; clearing the filter writes an empty value.      |
+| `FedoCreateFeedbackSheet(onDismiss = …)`                                      | [`ModelsScreen.kt`](app/src/main/java/com/fedo/modelpulse/ui/models/ModelsScreen.kt)             | The contextual sheet: "Missing a model? Request it" in the no-results state and "Report a problem" in the load-error state. Both appear only when a key is configured.                                                  |
+| `Fedo.logout()`                                                               | [`SettingsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/settings/SettingsViewModel.kt) | Demo sign-out: clears the identity and starts a new guest.                                                                                                                                                              |
 
 How each surface is meant to behave, including without a key, is written down in [specs/fedo-showcase.md](specs/fedo-showcase.md). The full SDK guide is in the [Fedo docs](https://docs.getfedo.com/guide/getting-started/).
 
@@ -105,7 +105,7 @@ specs/           constitution, architecture, Compose and testing patterns, decis
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines, and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md). Bugs in the SDK itself belong in [kusa-software/fedo-sdk](https://github.com/kusa-software/fedo-sdk/issues).
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines, and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md). Bugs in the SDK itself belong in [getfedo/fedo-sdk](https://github.com/getfedo/fedo-sdk/issues).
 
 ## Credits
 

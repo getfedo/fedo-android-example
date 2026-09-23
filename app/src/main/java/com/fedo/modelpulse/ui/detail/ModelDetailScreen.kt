@@ -23,11 +23,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
@@ -45,6 +48,8 @@ import com.fedo.modelpulse.data.Price
 import com.fedo.modelpulse.data.contextLabel
 import com.fedo.modelpulse.data.perMillionLabel
 import com.fedo.modelpulse.data.relativeLabel
+import com.fedo.modelpulse.ui.common.ModelPulseTopBar
+import com.fedo.modelpulse.ui.common.TopBarBackButton
 import com.fedo.modelpulse.ui.mergePaddingValues
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import java.math.BigDecimal
@@ -88,26 +93,18 @@ internal fun ModelDetailScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues()
 ) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = (uiState as? ModelDetailUiState.Success)
-                            ?.model
-                            ?.shortName
-                            .orEmpty(),
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.detail_back),
-                        )
-                    }
-                },
+            ModelPulseTopBar(
+                title = (uiState as? ModelDetailUiState.Success)
+                    ?.model
+                    ?.shortName
+                    .orEmpty(),
+                navigationIcon = { TopBarBackButton(onBackClick) },
+                scrollBehavior = scrollBehavior
             )
         },
     ) { innerPadding ->
@@ -129,15 +126,18 @@ internal fun ModelDetailScreen(
             is ModelDetailUiState.Success -> ModelDetailContent(
                 model = uiState.model,
                 onCopyId = onCopyId,
+                scrollBehavior = scrollBehavior,
                 contentPadding = mergedContentPadding,
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ModelDetailContent(
     model: AiModel,
+    scrollBehavior: TopAppBarScrollBehavior,
     onCopyId: (String) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues()
@@ -146,6 +146,7 @@ private fun ModelDetailContent(
         modifier = modifier
             .fillMaxSize()
             // A long description scrolls rather than clipping.
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .verticalScroll(rememberScrollState())
             .padding(contentPadding)
             .padding(horizontal = 16.dp, vertical = 8.dp)
