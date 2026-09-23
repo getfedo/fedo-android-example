@@ -28,6 +28,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -35,6 +36,9 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +53,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fedo.modelpulse.FedoIntegration
 import com.fedo.modelpulse.R
 import com.fedo.modelpulse.data.AiModel
 import com.fedo.modelpulse.data.Price
@@ -58,6 +63,7 @@ import com.fedo.modelpulse.data.perMillionLabel
 import com.fedo.modelpulse.data.providerFilters
 import com.fedo.modelpulse.data.relativeLabel
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
+import com.fedo.sdk.ui.FedoCreateFeedbackSheet
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -73,6 +79,7 @@ internal fun ModelsRoute(
 
     ModelsScreen(
         uiState = uiState,
+        isFeedbackEnabled = FedoIntegration.isConfigured,
         onModelClick = onModelClick,
         onRefresh = viewModel::refresh,
         onQueryChange = viewModel::onQueryChange,
@@ -85,6 +92,7 @@ internal fun ModelsRoute(
 @Composable
 internal fun ModelsScreen(
     uiState: ModelsUiState,
+    isFeedbackEnabled: Boolean,
     onModelClick: (String) -> Unit,
     onRefresh: () -> Unit,
     onQueryChange: (String) -> Unit,
@@ -93,6 +101,9 @@ internal fun ModelsScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
+    // Sheet visibility is UI-only state; nothing outside this screen cares.
+    var isFeedbackOpen by rememberSaveable { mutableStateOf(false) }
+    val openFeedback = { isFeedbackOpen = true }.takeIf { isFeedbackEnabled }
 
     // A failed refresh is announced wherever the list is scrolled to, which an
     // item at the top of the LazyColumn could not do.
@@ -133,6 +144,8 @@ internal fun ModelsScreen(
                 actionLabel = stringResource(R.string.models_retry),
                 onAction = onRefresh,
                 modifier = Modifier.padding(innerPadding),
+                secondaryLabel = stringResource(R.string.models_report_problem),
+                onSecondaryAction = openFeedback,
             )
 
             // providers is empty only when the catalogue itself is; a filter
@@ -149,6 +162,7 @@ internal fun ModelsScreen(
                 ModelsContent(
                     state = uiState,
                     onModelClick = onModelClick,
+                    onRequestModel = openFeedback,
                     onRefresh = onRefresh,
                     onQueryChange = onQueryChange,
                     onProviderChange = onProviderChange,
@@ -157,6 +171,12 @@ internal fun ModelsScreen(
             }
         }
     }
+
+    // The SDK throws if it was never initialized, so the sheet only exists
+    // when a key is configured — see specs/fedo-showcase.md.
+    if (isFeedbackOpen && isFeedbackEnabled) {
+        FedoCreateFeedbackSheet(onDismiss = { isFeedbackOpen = false })
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -164,6 +184,8 @@ internal fun ModelsScreen(
 private fun ModelsContent(
     state: ModelsUiState.Success,
     onModelClick: (String) -> Unit,
+    /** Null when Fedo has no key: the request action is then not offered. */
+    onRequestModel: (() -> Unit)?,
     onRefresh: () -> Unit,
     onQueryChange: (String) -> Unit,
     onProviderChange: (String?) -> Unit,
@@ -218,6 +240,8 @@ private fun ModelsContent(
                         },
                         title = stringResource(R.string.models_no_results_title),
                         modifier = Modifier.padding(top = 48.dp),
+                        secondaryLabel = stringResource(R.string.models_request_model),
+                        onSecondaryAction = onRequestModel,
                     )
                 }
             } else {
@@ -306,6 +330,7 @@ private fun ProviderFilters(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ModelCard(model: AiModel, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
@@ -360,6 +385,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun MessageState(
     message: String,
@@ -367,6 +393,9 @@ private fun MessageState(
     onAction: () -> Unit,
     modifier: Modifier = Modifier,
     title: String? = null,
+    secondaryLabel: String? = null,
+    /** Null hides the action — that is how a missing Fedo key removes it. */
+    onSecondaryAction: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -386,6 +415,11 @@ private fun MessageState(
         )
         FilledTonalButton(onClick = onAction) {
             Text(actionLabel)
+        }
+        if (secondaryLabel != null && onSecondaryAction != null) {
+            TextButton(onClick = onSecondaryAction) {
+                Text(secondaryLabel)
+            }
         }
     }
 }
@@ -407,6 +441,7 @@ private fun ModelsScreenPreview(
     ModelPulseTheme {
         ModelsScreen(
             uiState = uiState,
+            isFeedbackEnabled = true,
             onModelClick = {},
             onRefresh = {},
             onQueryChange = {},

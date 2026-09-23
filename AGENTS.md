@@ -105,9 +105,10 @@ Where the Fedo SDK is called — these are the only places:
 | `FedoFeedbackScreen` | `ui/roadmap/RoadmapScreen.kt` |
 | `Fedo.setUserID` / `setUserDisplayName` / `setUserEmail` / `logout` | `ui/settings/SettingsViewModel.kt` |
 | `Fedo.setUserProperty("favorite_provider", …)` | `ui/models/ModelsViewModel.kt` |
+| `FedoCreateFeedbackSheet` | `ui/models/ModelsScreen.kt` |
 
-`FedoCreateFeedbackSheet` is not wired up: it crashes against the material3
-version this project pins — see bead `8nq.7`.
+`material3` is held at 1.5.0-alpha01 so the SDK's sheet composes — see
+decisions/0006 before bumping it.
 
 Full detail: @specs/architecture.md, @specs/compose-pattern.md,
 @specs/testing.md, @specs/fedo-showcase.md

@@ -68,9 +68,8 @@ No key yet? The app still builds and runs: the models list, search, filter and d
 | `FedoFeedbackScreen(onDismiss = …)` | [`RoadmapScreen.kt`](app/src/main/java/com/fedo/modelpulse/ui/roadmap/RoadmapScreen.kt) | The Roadmap destination: the whole feedback board. It owns its internal navigation, so `onDismiss` only fires at the board root and pops the app's own back stack. |
 | `Fedo.setUserID(…)`<br>`Fedo.setUserDisplayName(…)`<br>`Fedo.setUserEmail(…)` | [`SettingsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/settings/SettingsViewModel.kt) | Demo sign-in. Feedback, votes and comments left as a guest move to the signed-in account. The demo id is a generated `demo-` UUID, never the email — a real app passes its own backend user id and keeps PII out of it. |
 | `Fedo.setUserProperty("favorite_provider", …)` | [`ModelsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/models/ModelsViewModel.kt) | Records the provider picked in the filter as a user property, so feedback can be segmented by what the user cares about. Properties are user-level and last-write-wins; clearing the filter writes an empty value. |
+| `FedoCreateFeedbackSheet(onDismiss = …)` | [`ModelsScreen.kt`](app/src/main/java/com/fedo/modelpulse/ui/models/ModelsScreen.kt) | The contextual sheet: "Missing a model? Request it" in the no-results state and "Report a problem" in the load-error state. Both appear only when a key is configured. |
 | `Fedo.logout()` | [`SettingsViewModel.kt`](app/src/main/java/com/fedo/modelpulse/ui/settings/SettingsViewModel.kt) | Demo sign-out: clears the identity and starts a new guest. |
-
-`FedoCreateFeedbackSheet` — the contextual "request a model" / "report a problem" sheet — is not wired up yet: with the material3 version this project pins it throws `NoSuchMethodError` from the SDK's own `ModalBottomSheet` call.
 
 How each surface is meant to behave, including without a key, is written down in [specs/fedo-showcase.md](specs/fedo-showcase.md). The full SDK guide is in the [Fedo docs](https://docs.getfedo.com/guide/getting-started/).
 

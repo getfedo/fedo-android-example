@@ -22,6 +22,8 @@
     <string name="models_no_results_title">No matches</string>
     <string name="models_no_results_body">No model matches your search and filter.</string>
     <string name="models_clear_filters">Clear filters</string>
+    <string name="models_request_model">Missing a model? Request it</string>
+    <string name="models_report_problem">Report a problem</string>
 
     <!-- Navigation -->
     <string name="nav_models">Models</string>

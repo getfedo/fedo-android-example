@@ -46,7 +46,9 @@ Opened from the models list, not from a destination of its own:
 - the **error** state, next to Retry.
 
 The sheet is dismissed through its `onDismiss`; the list state underneath is
-untouched.
+untouched. It composes only on a `material3` version that still carries the
+`ModalBottomSheet` overload the SDK calls — see
+decisions/0006-material3-alpha01-for-the-fedo-sheet.md.
 
 ### Settings — `SettingsKey`
 

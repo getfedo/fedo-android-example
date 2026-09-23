@@ -26,6 +26,12 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Contextual Fedo feedback: "Missing a model? Request it" in the no-results
+  state and "Report a problem" in the load-error state both open
+  `FedoCreateFeedbackSheet`, and neither appears without an API key by @mabd-agent
+- `material3` held at 1.5.0-alpha01, the newest version that keeps Material 3
+  expressive public *and* still carries the `ModalBottomSheet` overload the
+  Fedo SDK calls — see `specs/decisions/0006` by @mabd-agent
 - The agent instruction files (`AGENTS.md`, and `CLAUDE.md` through the
   symlink) now carry a real file map, a table of where each Fedo API is
   called, and the current conventions — warnings-as-errors, string and
