@@ -16,6 +16,13 @@ catalogue, search, provider filter, detail, navigation and theme on one side;
 roadmap board, settings with demo sign-in, `favorite_provider` and the
 contextual feedback sheet on the other.
 
+### Fixed
+
+- A model with no pricing block no longer claims "Variable" pricing. `-1`
+  still means variable; absent or unparseable prices are now `Price.Unknown`
+  and render as an em dash, the same as an unknown context window
+  by @mabd-agent
+
 ### Added
 
 - Android project skeleton: single `:app` module, Compose, Material 3,

@@ -27,12 +27,18 @@ data class AiModel(
 /** USD price for one token, as OpenRouter reports it (a string). */
 sealed interface Price {
     data object Free : Price
+
+    /** OpenRouter's "-1": the price depends on what the router picks. */
     data object Variable : Price
+
+    /** No pricing block, or a value that will not parse. Not the same claim. */
+    data object Unknown : Price
+
     data class PerToken(val usd: BigDecimal) : Price
 
     companion object {
         fun parse(raw: String): Price {
-            val value = raw.trim().toBigDecimalOrNull() ?: return Variable
+            val value = raw.trim().toBigDecimalOrNull() ?: return Unknown
             return when {
                 value.signum() == 0 -> Free
                 value.signum() < 0 -> Variable
@@ -53,6 +59,9 @@ private val ONE_CENT = BigDecimal("0.01")
 fun Price.perMillionLabel(): String = when (this) {
     Price.Free -> "Free"
     Price.Variable -> "Variable"
+    // The same em dash an unknown context window uses: we do not know, and
+    // saying "Variable" would claim something OpenRouter never said.
+    Price.Unknown -> "—"
     is Price.PerToken -> {
         val perMillion = usd.multiply(ONE_MILLION).setScale(4, RoundingMode.HALF_UP)
         if (perMillion < ONE_CENT) "<$0.01"

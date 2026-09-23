@@ -61,7 +61,8 @@ class OpenRouterDataSourceTest {
         assertNull(models.getValue("mistralai/mistral-medium-3-5").contextLength)
         val noArchitecture = models.getValue("google/gemini-3.8-flash")
         assertTrue(noArchitecture.inputModalities.isEmpty())
-        assertEquals(Price.Variable, noArchitecture.promptPrice)
+        // No pricing block at all: unknown, not "variable pricing".
+        assertEquals(Price.Unknown, noArchitecture.promptPrice)
     }
 
     @Test
@@ -92,7 +93,7 @@ class OpenRouterDataSourceTest {
         val models = dataSource().getModels().getOrThrow()
 
         assertEquals(1, models.size)
-        assertEquals(Price.Variable, models.first().promptPrice)
+        assertEquals(Price.Unknown, models.first().promptPrice)
     }
 
     private fun readResource(name: String): String =
