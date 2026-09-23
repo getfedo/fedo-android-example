@@ -55,8 +55,15 @@ This will be used later to track what changed before releasing.
 ./gradlew :app:testDebugUnitTest      # unit tests — per-bead gate
 ./gradlew :app:lintDebug              # lint — per-bead gate
 ./gradlew :app:assembleDebug          # build the APK
-./gradlew :app:connectedDebugAndroidTest  # instrumented tests (device needed)
+./gradlew :app:installDebug           # build and install on the connected device
+./gradlew :app:connectedDebugAndroidTest  # Compose UI tests (device needed)
 ./gradlew build test lint             # full gate, "done" per the constitution
+```
+
+Add `-PwarningsAsErrors=true` to any compile task to get what CI enforces:
+
+```bash
+./gradlew :app:assembleDebug -PwarningsAsErrors=true
 ```
 
 ## Architecture Overview
@@ -65,12 +72,45 @@ ModelPulse: single-activity Compose app that lists AI models from the public
 OpenRouter API (`GET https://openrouter.ai/api/v1/models`, no key) and
 showcases the Fedo SDK. Single `:app` module.
 
-UI (stateless `Screen` + ViewModel with `StateFlow<UiState>`) → optional
-domain layer → `ModelsRepository` → OkHttp remote data source. Remote is the
-source of truth; the last successful response is cached in memory only. No
-Room, no DataStore, no WorkManager, no offline support.
+UI (stateless `Screen` + ViewModel with `StateFlow<UiState>`) →
+`ModelsRepository` → OkHttp remote data source. There is no domain layer:
+search and provider filtering are pure functions over `List<AiModel>`. Remote
+is the source of truth and the last successful response is cached in memory
+only — no Room, no WorkManager, no offline support. The one thing persisted is
+the demo user, in SharedPreferences (decisions/0004).
 
-Full detail: @specs/architecture.md, @specs/compose-pattern.md, @specs/testing.md
+```
+app/src/main/java/com/fedo/modelpulse/
+  ModelPulseApplication.kt   Koin start + Fedo.initialize when a key is present
+  FedoIntegration.kt         isConfigured — the single "do we have a key" answer
+  MainActivity.kt            one activity, hosts ModelPulseNavDisplay
+  data/AiModel.kt            domain model, Price, and the pure formatters
+  data/ModelFilter.kt        filterBy() and providerFilters() — pure, tested
+  data/ModelsRepository.kt   in-memory cache, one load at a time
+  data/OpenRouterDataSource.kt  OkHttp + kotlinx.serialization, returns Result
+  di/Modules.kt              one module per layer
+  ui/navigation/             NavKeys, backStackFor(), ModelPulseNavDisplay
+  ui/models/                 list: search, provider chips, snackbar on refresh error
+  ui/detail/                 model detail, copyable id
+  ui/roadmap/                the Fedo board, or the no-key explainer
+  ui/settings/               SDK status, demo sign-in, DemoUserStore
+  ui/theme/                  MaterialExpressiveTheme + dynamic colour
+```
+
+Where the Fedo SDK is called — these are the only places:
+
+| API | File |
+|-----|------|
+| `Fedo.initialize` | `ModelPulseApplication.kt` |
+| `FedoFeedbackScreen` | `ui/roadmap/RoadmapScreen.kt` |
+| `Fedo.setUserID` / `setUserDisplayName` / `setUserEmail` / `logout` | `ui/settings/SettingsViewModel.kt` |
+| `Fedo.setUserProperty("favorite_provider", …)` | `ui/models/ModelsViewModel.kt` |
+
+`FedoCreateFeedbackSheet` is not wired up: it crashes against the material3
+version this project pins — see bead `8nq.7`.
+
+Full detail: @specs/architecture.md, @specs/compose-pattern.md,
+@specs/testing.md, @specs/fedo-showcase.md
 
 ## Conventions & Patterns
 
@@ -81,8 +121,20 @@ Full detail: @specs/architecture.md, @specs/compose-pattern.md, @specs/testing.m
   composables never format.
 - Screens are stateless and take every input as a parameter, so they preview
   and test without Koin.
-- A failed refresh keeps the loaded list and reports inline; only an empty
-  screen becomes an error state.
+- A failed refresh keeps the loaded list and reports through a snackbar; only
+  an empty screen becomes an error state.
+- Every user-facing string lives in `strings.xml`; a ViewModel carries a
+  `@StringRes Int`, never English prose. Actionable icon-only controls carry a
+  `contentDescription`.
+- UI: Material 3 expressive components (`MaterialExpressiveTheme`,
+  `MediumFlexibleTopAppBar`, `ContainedLoadingIndicator`, the `*Emphasized`
+  type styles). No hardcoded colours — dynamic colour on API 31+, the Material
+  baseline schemes below it.
+- `minSdk` 29, `targetSdk` 37, Java 21. Zero compiler warnings: CI builds with
+  `-PwarningsAsErrors=true`.
+- Add a dependency only when a few lines cannot do the job; this app is
+  documentation, so every extra library is something an integrator must read
+  past.
 - Acceptance criteria carry IDs (`AC-1`, …); each maps to ≥1 test named after
   it.
 - Library versions are pinned by Kotlin binary compatibility — see
