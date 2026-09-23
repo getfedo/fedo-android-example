@@ -12,14 +12,27 @@ import org.junit.Test
 class AiModelTest {
 
     @Test
+    fun `AC-1 a price that will not parse is unknown, not variable`() {
+        assertEquals(Price.Unknown, Price.parse("cheap"))
+        assertEquals(Price.Unknown, Price.parse(""))
+        assertEquals("—", Price.Unknown.perMillionLabel())
+    }
+
+    @Test
+    fun `AC-2 minus one is still variable`() {
+        assertEquals(Price.Variable, Price.parse("-1"))
+        assertEquals("Variable", Price.Variable.perMillionLabel())
+    }
+
+    @Test
     fun `price per million renders the documented examples`() {
         assertEquals("$0.96", Price.parse("0.00000096").perMillionLabel())
         assertEquals("$0.075", Price.parse("0.000000075").perMillionLabel())
         assertEquals("$15", Price.parse("0.000015").perMillionLabel())
         assertEquals("Free", Price.parse("0").perMillionLabel())
         assertEquals("Variable", Price.parse("-1").perMillionLabel())
-        assertEquals("Variable", Price.parse("cheap").perMillionLabel())
-        assertEquals("Variable", Price.parse("").perMillionLabel())
+        assertEquals("—", Price.parse("cheap").perMillionLabel())
+        assertEquals("—", Price.parse("").perMillionLabel())
     }
 
     @Test
@@ -60,7 +73,8 @@ class AiModelTest {
         assertEquals("openai", model.providerName)
         assertEquals("GPT-5", model.shortName)
         assertEquals(null, model.contextLength)
-        assertEquals(Price.Variable, model.promptPrice)
+        // No pricing block on the wire: unknown, not variable.
+        assertEquals(Price.Unknown, model.promptPrice)
     }
 
     @Test

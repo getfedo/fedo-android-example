@@ -140,6 +140,7 @@ class PriceTest {
     @Test
     fun `unparseable price is unknown`() {
         assertEquals(Price.Unknown, Price.parse("cheap"))
+        assertEquals(Price.Unknown, Price.parse(""))
     }
 }
 
