@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- The activity is a plain ComponentActivity, so this is the platform
+         theme, not an AppCompat one. values-night/ carries the dark variant,
+         which keeps the window behind Compose from flashing white. -->
     <style name="Theme.ModelPulse" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

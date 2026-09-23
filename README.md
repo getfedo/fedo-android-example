@@ -24,7 +24,18 @@ Single `:app` module. Compose, Koin, OkHttp, kotlinx.serialization and Navigatio
 | --- | --- | --- | --- |
 | <img src="docs/images/models-list.png" width="180" alt="Models list, newest first, with search and provider filter"> | <img src="docs/images/model-detail.png" width="180" alt="Model detail with prices, context window and copyable id"> | <img src="docs/images/roadmap.png" width="180" alt="The Fedo feedback board in the Roadmap destination"> | <img src="docs/images/settings.png" width="180" alt="Settings showing SDK status and the demo account"> |
 
-Captured on a tablet in dark theme with a Fedo API key configured.
+<details>
+<summary>Light theme</summary>
+
+| Models | Model detail | Roadmap | Settings |
+| --- | --- | --- | --- |
+| <img src="docs/images/models-list-light.png" width="180" alt="Models list in light theme"> | <img src="docs/images/model-detail-light.png" width="180" alt="Model detail in light theme"> | <img src="docs/images/roadmap-light.png" width="180" alt="The Fedo feedback board in light theme"> | <img src="docs/images/settings-light.png" width="180" alt="Settings in light theme"> |
+
+</details>
+
+Captured on a tablet with a Fedo API key configured. The colours come from the
+device wallpaper: the app uses dynamic colour on API 31+ and the Material
+baseline schemes below that, so your build will not look identical.
 
 ## Requirements
 
