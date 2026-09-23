@@ -1,11 +1,13 @@
 package com.fedo.modelpulse.ui.models
 
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.performClick
+import androidx.test.platform.app.InstrumentationRegistry
+import com.fedo.modelpulse.R
 import com.fedo.modelpulse.data.AiModel
 import com.fedo.modelpulse.data.Price
 import com.fedo.modelpulse.data.providerFilters
@@ -36,6 +38,14 @@ class ModelsScreenTest {
         ),
     )
 
+    private fun string(id: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
+
+    /** The same resources the screen uses, never a copied literal. */
+    private fun refreshFailedText(): String = InstrumentationRegistry.getInstrumentation()
+        .targetContext
+        .getString(R.string.models_refresh_failed, string(R.string.models_error_offline))
+
     private fun setScreen(state: ModelsUiState, onRefresh: () -> Unit = {}) {
         composeTestRule.setContent {
             ModelPulseTheme {
@@ -57,16 +67,14 @@ class ModelsScreenTest {
             ModelsUiState.Success(
                 models = models,
                 providers = models.providerFilters(),
-                refreshError = "Couldn't reach OpenRouter.",
+                refreshErrorRes = R.string.models_error_offline,
             ),
             onRefresh = { retried = true },
         )
 
-        composeTestRule
-            .onNodeWithText("Showing the models loaded earlier. Couldn't reach OpenRouter.")
-            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(refreshFailedText()).assertIsDisplayed()
 
-        composeTestRule.onNodeWithText("Retry").performClick()
+        composeTestRule.onNodeWithText(string(R.string.models_retry)).performClick()
 
         assertTrue(retried)
     }
@@ -77,14 +85,12 @@ class ModelsScreenTest {
             ModelsUiState.Success(
                 models = models,
                 providers = models.providerFilters(),
-                refreshError = "Couldn't reach OpenRouter.",
+                refreshErrorRes = R.string.models_error_offline,
             ),
         )
 
         composeTestRule.onNodeWithText("Claude Opus 5").assertIsDisplayed()
         // The old inline notice lived in the list; only the snackbar says this now.
-        composeTestRule
-            .onAllNodesWithText("Showing the models loaded earlier. Couldn't reach OpenRouter.")
-            .assertCountEquals(1)
+        composeTestRule.onAllNodesWithText(refreshFailedText()).assertCountEquals(1)
     }
 }

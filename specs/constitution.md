@@ -11,6 +11,18 @@
   DataStore, no WorkManager. One exception: the demo user in
   SharedPreferences — see decisions/0004-demo-user-persistence.md.
 - UI: use material 3 expressive ui elements.
+- Every user-facing string lives in `strings.xml`. Composables read it with
+  `stringResource`, counts with `pluralStringResource`, and never concatenate
+  sentences. A ViewModel that needs to say something to the user carries a
+  `@StringRes Int`, not English text — the string is chosen in the UI layer.
+  Data-layer values (a model id, a provider name) are data, not copy.
+- Accessibility, the minimum bar: every actionable icon-only control has a
+  `contentDescription`; decorative icons pass `null`. Touch targets stay at
+  the Material minimum of 48dp — keep the components' defaults rather than
+  shrinking them. State is never signalled by colour alone.
+- UI tests find nodes by the text the user sees, resolved from the same
+  string resource the screen uses, not by a copied literal. A `testTag` is for
+  what has no text, never a substitute for semantics.
 - A failed refresh never wipes loaded data.
 - Every screen composable has a `@Preview` per `UiState`.
 - Every acceptance criterion has an ID (`AC-1`, `AC-2`, …) and maps to ≥1

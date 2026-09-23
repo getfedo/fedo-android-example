@@ -96,8 +96,8 @@ internal fun ModelsScreen(
 
     // A failed refresh is announced wherever the list is scrolled to, which an
     // item at the top of the LazyColumn could not do.
-    val refreshMessage = (uiState as? ModelsUiState.Success)?.refreshError
-        ?.let { stringResource(R.string.models_refresh_failed, it) }
+    val refreshMessage = (uiState as? ModelsUiState.Success)?.refreshErrorRes
+        ?.let { stringResource(R.string.models_refresh_failed, stringResource(it)) }
     val retryLabel = stringResource(R.string.models_retry)
 
     // Keyed on the message, so a recomposition with the same error does not
@@ -129,7 +129,7 @@ internal fun ModelsScreen(
             ModelsUiState.Loading -> LoadingState(Modifier.padding(innerPadding))
 
             is ModelsUiState.Error -> MessageState(
-                message = uiState.message,
+                message = stringResource(uiState.messageRes),
                 actionLabel = stringResource(R.string.models_retry),
                 onAction = onRefresh,
                 modifier = Modifier.padding(innerPadding),
@@ -418,13 +418,13 @@ private fun ModelsScreenPreview(
 private class ModelsUiStateProvider : PreviewParameterProvider<ModelsUiState> {
     override val values = sequenceOf(
         ModelsUiState.Loading,
-        ModelsUiState.Error("Couldn't reach OpenRouter. Check your connection."),
+        ModelsUiState.Error(R.string.models_error_offline),
         ModelsUiState.Success(previewModels, providers = previewProviders),
         ModelsUiState.Success(previewModels, providers = previewProviders, isRefreshing = true),
         ModelsUiState.Success(
             models = previewModels,
             providers = previewProviders,
-            refreshError = "Couldn't reach OpenRouter.",
+            refreshErrorRes = R.string.models_error_offline,
         ),
         ModelsUiState.Success(
             models = emptyList(),

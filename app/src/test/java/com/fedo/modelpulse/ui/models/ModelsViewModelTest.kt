@@ -1,6 +1,7 @@
 package com.fedo.modelpulse.ui.models
 
 import com.fedo.modelpulse.MainDispatcherRule
+import com.fedo.modelpulse.R
 import com.fedo.modelpulse.TestData
 import com.fedo.modelpulse.TestModelsRepository
 import java.io.IOException
@@ -40,7 +41,7 @@ class ModelsViewModelTest {
 
         val state = viewModel.uiState.first { it is ModelsUiState.Error }
         assertTrue(state is ModelsUiState.Error)
-        assertEquals("Couldn't reach OpenRouter. Check your connection.", (state as ModelsUiState.Error).message)
+        assertEquals(R.string.models_error_offline, (state as ModelsUiState.Error).messageRes)
     }
 
     @Test
@@ -50,16 +51,16 @@ class ModelsViewModelTest {
         val loaded = viewModel.uiState.first {
             it is ModelsUiState.Success && it.models.isNotEmpty()
         }
-        assertNull((loaded as ModelsUiState.Success).refreshError)
+        assertNull((loaded as ModelsUiState.Success).refreshErrorRes)
 
         repository.refreshResult = Result.failure(IOException("offline"))
         viewModel.refresh()
 
         val state = viewModel.uiState.first {
-            it is ModelsUiState.Success && it.refreshError != null
+            it is ModelsUiState.Success && it.refreshErrorRes != null
         } as ModelsUiState.Success
         assertEquals(TestData.testModels, state.models)
-        assertNotNull(state.refreshError)
+        assertNotNull(state.refreshErrorRes)
     }
 
     @Test

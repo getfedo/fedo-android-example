@@ -1,8 +1,10 @@
 package com.fedo.modelpulse.ui.models
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fedo.modelpulse.FedoIntegration
+import com.fedo.modelpulse.R
 import com.fedo.modelpulse.data.ModelsRepository
 import com.fedo.sdk.Fedo
 import java.io.IOException
@@ -49,7 +51,7 @@ class ModelsViewModel(
 
             loadState.value = repository.refresh().fold(
                 onSuccess = { LoadState.Idle },
-                onFailure = { LoadState.Failed(it.userMessage()) },
+                onFailure = { LoadState.Failed(it.userMessageRes()) },
             )
         }
     }
@@ -84,10 +86,12 @@ private fun reportFavoriteProviderToFedo(slug: String?) {
 private const val FAVORITE_PROVIDER = "favorite_provider"
 
 /**
- * The one place a throwable becomes something a person reads. The data layer
- * deliberately does not do this.
+ * The one place a throwable becomes something a person reads — as a string
+ * resource, so the copy lives in strings.xml and the UI layer resolves it.
+ * The data layer deliberately does not do this at all.
  */
-internal fun Throwable.userMessage(): String = when (this) {
-    is IOException -> "Couldn't reach OpenRouter. Check your connection."
-    else -> "Something went wrong loading the catalogue."
+@StringRes
+internal fun Throwable.userMessageRes(): Int = when (this) {
+    is IOException -> R.string.models_error_offline
+    else -> R.string.models_error_generic
 }
