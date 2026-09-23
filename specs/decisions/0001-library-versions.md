@@ -73,7 +73,7 @@ Rejected:
 `MockEngine` are present in `classes7.dex`/`classes8.dex` of a debug build.
 The debug APK is ~46 MB.
 
-This is a packaging bug in the SDK (`kusa-software/fedo-sdk`), not something
+This is a packaging bug in the SDK (`getfedo/fedo-sdk`), not something
 this repo can fix properly. Workaround if it blocks a release:
 
 ```kotlin

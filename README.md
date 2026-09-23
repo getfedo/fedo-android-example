@@ -105,7 +105,7 @@ specs/           constitution, architecture, Compose and testing patterns, decis
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines, and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md). Bugs in the SDK itself belong in [kusa-software/fedo-sdk](https://github.com/kusa-software/fedo-sdk/issues).
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines, and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md). Bugs in the SDK itself belong in [getfedo/fedo-sdk](https://github.com/getfedo/fedo-sdk/issues).
 
 ## Credits
 

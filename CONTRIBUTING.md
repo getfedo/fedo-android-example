@@ -122,6 +122,6 @@ they only come alive once the code is pushed there.
 ## Where to report
 
 - Bugs and ideas for this example app: [GitHub issues](https://github.com/getfedo/fedo-android-example/issues) in this repository.
-- Bugs in the Fedo Android SDK itself: [kusa-software/fedo-sdk issues](https://github.com/kusa-software/fedo-sdk/issues).
+- Bugs in the Fedo Android SDK itself: [getfedo/fedo-sdk issues](https://github.com/getfedo/fedo-sdk/issues).
 - Security vulnerabilities: privately, as described in [SECURITY.md](SECURITY.md).
 - Conduct concerns: see the [Code of Conduct](CODE_OF_CONDUCT.md).
