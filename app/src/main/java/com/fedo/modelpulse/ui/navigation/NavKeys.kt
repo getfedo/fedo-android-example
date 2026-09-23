@@ -1,6 +1,15 @@
 package com.fedo.modelpulse.ui.navigation
 
+import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.navigation3.runtime.NavKey
+import com.fedo.modelpulse.R
+import com.fedo.modelpulse.ui.icons.IconAiFilled
+import com.fedo.modelpulse.ui.icons.IconAiOutlined
+import com.fedo.modelpulse.ui.icons.IconSettingsFilled
+import com.fedo.modelpulse.ui.icons.IconSettingsOutlined
+import com.fedo.modelpulse.ui.icons.IconTimeline
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,10 +26,30 @@ data object RoadmapKey : NavKey
 data object SettingsKey : NavKey
 
 /** A bottom bar destination: the key it opens and the label it shows. */
-enum class TopLevelDestination(val key: NavKey, val labelRes: Int) {
-    MODELS(ModelsKey, com.fedo.modelpulse.R.string.nav_models),
-    ROADMAP(RoadmapKey, com.fedo.modelpulse.R.string.nav_roadmap),
-    SETTINGS(SettingsKey, com.fedo.modelpulse.R.string.nav_settings),
+enum class TopLevelDestination(
+    val key: NavKey,
+    val labelRes: Int,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
+) {
+    MODELS(
+        ModelsKey,
+        R.string.nav_models,
+        IconAiFilled,
+        IconAiOutlined
+    ),
+    ROADMAP(
+        RoadmapKey,
+        R.string.nav_roadmap,
+        IconTimeline,
+        IconTimeline
+    ),
+    SETTINGS(
+        SettingsKey,
+        R.string.nav_settings,
+        IconSettingsFilled,
+        IconSettingsOutlined
+    ),
 }
 
 /**

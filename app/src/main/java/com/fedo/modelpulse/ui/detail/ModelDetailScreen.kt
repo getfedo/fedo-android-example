@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,6 +45,7 @@ import com.fedo.modelpulse.data.Price
 import com.fedo.modelpulse.data.contextLabel
 import com.fedo.modelpulse.data.perMillionLabel
 import com.fedo.modelpulse.data.relativeLabel
+import com.fedo.modelpulse.ui.mergePaddingValues
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import java.math.BigDecimal
 import java.time.Instant
@@ -56,6 +58,7 @@ internal fun ModelDetailRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ModelDetailViewModel = koinViewModel(),
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val clipboard = LocalClipboard.current
@@ -72,6 +75,7 @@ internal fun ModelDetailRoute(
             }
         },
         modifier = modifier,
+        contentPadding = contentPadding
     )
 }
 
@@ -82,6 +86,7 @@ internal fun ModelDetailScreen(
     onBackClick: () -> Unit,
     onCopyId: (String) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -106,23 +111,25 @@ internal fun ModelDetailScreen(
             )
         },
     ) { innerPadding ->
+        val mergedContentPadding = mergePaddingValues(innerPadding, contentPadding)
+
         when (uiState) {
-            ModelDetailUiState.Loading -> LoadingState(Modifier.padding(innerPadding))
+            ModelDetailUiState.Loading -> LoadingState(Modifier.padding(mergedContentPadding))
 
             ModelDetailUiState.NotFound -> Text(
                 text = stringResource(R.string.detail_not_found),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxWidth()
+                    .padding(mergedContentPadding)
                     .padding(32.dp),
             )
 
             is ModelDetailUiState.Success -> ModelDetailContent(
                 model = uiState.model,
                 onCopyId = onCopyId,
-                modifier = Modifier.padding(innerPadding),
+                contentPadding = mergedContentPadding,
             )
         }
     }
@@ -133,13 +140,16 @@ private fun ModelDetailContent(
     model: AiModel,
     onCopyId: (String) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             // A long description scrolls rather than clipping.
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(contentPadding)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+        ,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(model.providerName, style = MaterialTheme.typography.titleMedium)

@@ -109,9 +109,9 @@ refresh survives the ViewModel that triggered it.
 
 ### Data Sources
 
-| Type | Implementation | Purpose |
-|------|----------------|---------|
-| Remote | OkHttp + kotlinx.serialization | Fetch the OpenRouter catalogue |
+| Type   | Implementation                       | Purpose                                                    |
+|--------|--------------------------------------|------------------------------------------------------------|
+| Remote | OkHttp + kotlinx.serialization       | Fetch the OpenRouter catalogue                             |
 | Memory | `MutableStateFlow` in the repository | Survive navigation and failed refreshes within one session |
 
 There is no local database and no preferences store. Add one only when a

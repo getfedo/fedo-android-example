@@ -62,6 +62,7 @@ import com.fedo.modelpulse.data.contextLabel
 import com.fedo.modelpulse.data.perMillionLabel
 import com.fedo.modelpulse.data.providerFilters
 import com.fedo.modelpulse.data.relativeLabel
+import com.fedo.modelpulse.ui.mergePaddingValues
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import com.fedo.sdk.ui.FedoCreateFeedbackSheet
 import java.math.BigDecimal
@@ -74,6 +75,7 @@ internal fun ModelsRoute(
     onModelClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ModelsViewModel = koinViewModel(),
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -85,6 +87,7 @@ internal fun ModelsRoute(
         onQueryChange = viewModel::onQueryChange,
         onProviderChange = viewModel::onProviderChange,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -98,6 +101,7 @@ internal fun ModelsScreen(
     onQueryChange: (String) -> Unit,
     onProviderChange: (String?) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -136,14 +140,16 @@ internal fun ModelsScreen(
             )
         },
     ) { innerPadding ->
+        val mergedContentPadding = mergePaddingValues(innerPadding, contentPadding)
+
         when (uiState) {
-            ModelsUiState.Loading -> LoadingState(Modifier.padding(innerPadding))
+            ModelsUiState.Loading -> LoadingState(Modifier.padding(mergedContentPadding))
 
             is ModelsUiState.Error -> MessageState(
                 message = stringResource(uiState.messageRes),
                 actionLabel = stringResource(R.string.models_retry),
                 onAction = onRefresh,
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(mergedContentPadding),
                 secondaryLabel = stringResource(R.string.models_report_problem),
                 onSecondaryAction = openFeedback,
             )
@@ -156,7 +162,7 @@ internal fun ModelsScreen(
                     actionLabel = stringResource(R.string.models_refresh),
                     onAction = onRefresh,
                     title = stringResource(R.string.models_empty_title),
-                    modifier = Modifier.padding(innerPadding),
+                    modifier = Modifier.padding(mergedContentPadding),
                 )
             } else {
                 ModelsContent(
@@ -166,7 +172,7 @@ internal fun ModelsScreen(
                     onRefresh = onRefresh,
                     onQueryChange = onQueryChange,
                     onProviderChange = onProviderChange,
-                    contentPadding = innerPadding,
+                    contentPadding = mergedContentPadding,
                 )
             }
         }
