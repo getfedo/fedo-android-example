@@ -110,7 +110,7 @@ contextual feedback sheet on the other.
   full scrolling description, plus the model id in monospace with a copy
   action. An id missing from the catalogue shows a not-found state
   by @mabd-agent
-- App navigation scaffold: a bottom navigation bar with Models, Roadmap and
+- App navigation scaffold: a floating bottom navigation bar with Models, Roadmap and
   Settings, built on Navigation 3 (`NavDisplay` + a `@Serializable` `NavKey`
   back stack). Models is the back-stack root, so system back from any other
   destination returns to it. Roadmap and Settings are placeholders until the
