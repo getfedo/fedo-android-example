@@ -26,6 +26,10 @@ Targets Fedo SDK `0.4.0`.
 - OpenRouter data layer: `AiModel` with the derived provider, short name,
   prices and context window, plus `OpenRouterDataSource.getModels()` returning
   the catalogue newest first as a `Result`, never throwing by @mabd-agent
+- Light and dark theme pass: the Android Studio template palette and
+  `colors.xml` are gone, the non-dynamic fallback is the Material baseline
+  scheme, and `values-night/themes.xml` gives the window a dark variant so it
+  cannot flash white before Compose draws. Light screenshots added by @mabd-agent
 - `specs/decisions/0005-features-live-in-beads.md`: one feature workflow —
   beads describe features, `specs/` holds only what outlives them. The agent
   instructions no longer reference a `specs/features/` directory that was
