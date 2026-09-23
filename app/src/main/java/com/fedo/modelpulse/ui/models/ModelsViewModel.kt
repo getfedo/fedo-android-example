@@ -41,8 +41,9 @@ class ModelsViewModel(
     }
 
     /**
-     * The repository supersedes any load already running, so tapping refresh
-     * during the first load cannot leave two results racing.
+     * A refresh started while one is already running joins it and shares its
+     * result, so tapping refresh during the first load cannot fetch twice or
+     * leave two results racing.
      */
     fun refresh() {
         viewModelScope.launch {

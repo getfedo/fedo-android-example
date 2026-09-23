@@ -281,7 +281,7 @@ class DefaultModelsRepositoryTest {
     }
 
     @Test
-    fun `a second refresh supersedes the in-flight one`() = runTest {
+    fun `a second refresh joins the in-flight one instead of fetching twice`() = runTest {
         // remote.gate suspends the first call until released
         …
     }
