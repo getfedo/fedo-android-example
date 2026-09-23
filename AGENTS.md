@@ -17,6 +17,17 @@ Recorded decisions: `specs/decisions/`
 
 All tasks live in beads - never in markdown
 
+Features live in beads, not in a spec folder. An epic plus its child beads,
+each with `AC-n` criteria, is the whole description of a feature; there is no
+`specs/features/` directory and no spec.md → plan.md → tasks.md chain. `specs/`
+holds only what outlives a feature: the constitution, the architecture, the
+Compose and testing patterns, the Fedo showcase surface, and `decisions/`.
+
+When a feature needs a written design that other work will depend on — an
+integration surface, a cross-cutting rule — add or update the relevant file in
+`specs/` and record the why in `decisions/`. File that as its own bead, the way
+the Fedo showcase spec was.
+
 Workflow:
 - Bugs and small tweaks: a single bead, no spec.
 - Work from `bd ready`. After each bead: run
@@ -25,7 +36,8 @@ Workflow:
 - Spec found wrong or incomplete → stop and propose a spec edit first.
 - Project rules and decisions go in constitution.md or decisions/,
   not in beads memory.
-- Epic closed → its spec is frozen.
+- Epic closed → the decisions behind it are frozen: change them with a new
+  record in `decisions/`, not by editing the old one.
 - Beads data is local until pushed: `bd dolt push` / `bd dolt pull`. No Dolt
   remote is configured yet, so `.beads/issues.jsonl` is currently the only
   copy that travels with git — and it is an export, not the source of truth.
