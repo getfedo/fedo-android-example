@@ -35,7 +35,7 @@ is restored when the script exits.
 |--------|-------|------------|------|
 | `models-list` | launch | `Search models` shown | `models-list.png` |
 | `model-detail` | launch, tap the first model card | `Copy` shown | `model-detail.png` |
-| `roadmap` | launch, tap the nav item with desc `Roadmap` | `Feedback` shown, +2 s for the SDK list | `roadmap.png` |
+| `roadmap` | launch, tap the nav item with desc `Settings`, tap `Roadmap` | `Feedback` shown, +2 s for the SDK list | `roadmap.png` |
 | `settings` | launch, tap the nav item with desc `Settings` | `Fedo SDK` shown | `settings.png` |
 
 Nodes are found in `uiautomator dump` by text or content-desc, never by

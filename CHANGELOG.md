@@ -139,6 +139,9 @@ contextual feedback sheet on the other.
 
 ### Changed
 
+- README screenshots retaken on the Galaxy A51. `scripts/screenshots.sh`
+  now reaches Roadmap through Settings, since Roadmap left the bottom bar
+  by @mabd-agent
 - `specs/screenshots.md` and `scripts/screenshots.sh`: one command retakes
   every README screenshot, dark and light, per screen by @mabd-agent
 - README screenshots retaken on a phone, dark and light, showing the unified

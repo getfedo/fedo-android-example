@@ -59,7 +59,7 @@ shot() { adb exec-out screencap -p > "$OUT/$1.png"; echo "$1.png"; }
 # One function per screen; each starts from a fresh launch on Models.
 models-list()  { launch; shot "models-list$1"; }
 model-detail() { launch; adb shell input tap $(ui card); wait_for "Copy"; shot "model-detail$1"; }
-roadmap()      { launch; tap "Roadmap"; wait_for "Feedback"; sleep 2; shot "roadmap$1"; }
+roadmap()      { launch; tap "Settings"; wait_for "Roadmap"; tap "Roadmap"; wait_for "Feedback"; sleep 2; shot "roadmap$1"; }
 settings()     { launch; tap "Settings"; wait_for "Fedo SDK"; shot "settings$1"; }
 
 ORIGINAL_NIGHT=$(adb shell cmd uimode night | awk '{print $3}')
