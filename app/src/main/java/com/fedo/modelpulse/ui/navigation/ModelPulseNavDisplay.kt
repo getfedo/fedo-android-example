@@ -67,13 +67,15 @@ fun ModelPulseNavDisplay(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            BottomBar(
-                currentNavKey = backStack.lastOrNull(),
-                onSelect = { destination ->
-                    backStack.clear()
-                    backStack.addAll(backStackFor(destination))
-                }
-            )
+            if (backStack.lastOrNull() !is RoadmapKey) {
+                BottomBar(
+                    currentNavKey = backStack.lastOrNull(),
+                    onSelect = { destination ->
+                        backStack.clear()
+                        backStack.addAll(backStackFor(destination))
+                    }
+                )
+            }
         },
     ) { innerPadding ->
         NavDisplay(
@@ -102,11 +104,11 @@ fun ModelPulseNavDisplay(modifier: Modifier = Modifier) {
                     RoadmapScreen(
                         isConfigured = FedoIntegration.isConfigured,
                         onBack = { backStack.removeLastOrNull() },
-                        modifier = Modifier.padding(innerPadding)
                     )
                 }
                 entry<SettingsKey> {
                     SettingsRoute(
+                        onRoadmapClick = { backStack.add(RoadmapKey) },
                         contentPadding = innerPadding
                     )
                 }
@@ -217,7 +219,7 @@ class BottomSheetStateProvider : PreviewParameterProvider<NavKey?> {
     override val values = sequenceOf(
         null,
         TopLevelDestination.MODELS.key,
-        TopLevelDestination.ROADMAP.key,
+//        TopLevelDestination.ROADMAP.key,
         TopLevelDestination.SETTINGS.key,
     )
 }

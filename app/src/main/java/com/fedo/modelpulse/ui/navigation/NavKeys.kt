@@ -38,12 +38,12 @@ enum class TopLevelDestination(
         IconAiFilled,
         IconAiOutlined
     ),
-    ROADMAP(
-        RoadmapKey,
-        R.string.nav_roadmap,
-        IconTimeline,
-        IconTimeline
-    ),
+//    ROADMAP(
+//        RoadmapKey,
+//        R.string.nav_roadmap,
+//        IconTimeline,
+//        IconTimeline
+//    ),
     SETTINGS(
         SettingsKey,
         R.string.nav_settings,

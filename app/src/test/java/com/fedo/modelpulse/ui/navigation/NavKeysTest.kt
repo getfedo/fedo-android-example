@@ -8,15 +8,15 @@ class NavKeysTest {
     @Test
     fun `AC-1 every destination has a key and a label`() {
         assertEquals(
-            listOf(ModelsKey, RoadmapKey, SettingsKey),
+            listOf(ModelsKey, SettingsKey),
             TopLevelDestination.entries.map(TopLevelDestination::key),
         )
-        assertEquals(3, TopLevelDestination.entries.count { it.labelRes != 0 })
+        assertEquals(2, TopLevelDestination.entries.count { it.labelRes != 0 })
     }
 
     @Test
     fun `AC-2 back from another destination returns to Models`() {
-        assertEquals(listOf(ModelsKey, RoadmapKey), backStackFor(TopLevelDestination.ROADMAP))
+//        assertEquals(listOf(ModelsKey, RoadmapKey), backStackFor(TopLevelDestination.ROADMAP))
         assertEquals(listOf(ModelsKey, SettingsKey), backStackFor(TopLevelDestination.SETTINGS))
     }
 

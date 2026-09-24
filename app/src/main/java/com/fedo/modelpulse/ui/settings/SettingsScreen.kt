@@ -38,6 +38,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun SettingsRoute(
+    onRoadmapClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues()
@@ -50,6 +51,7 @@ internal fun SettingsRoute(
         onEmailChange = viewModel::onEmailChange,
         onSignIn = viewModel::signIn,
         onSignOut = viewModel::signOut,
+        onRoadmapClick = onRoadmapClick,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -63,6 +65,7 @@ internal fun SettingsScreen(
     onEmailChange: (String) -> Unit,
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
+    onRoadmapClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues()
 ) {
@@ -97,6 +100,12 @@ internal fun SettingsScreen(
                 onSignIn = onSignIn,
                 onSignOut = onSignOut,
             )
+
+            Button(
+                onClick = onRoadmapClick
+            ) {
+                Text(stringResource(R.string.nav_roadmap))
+            }
         }
     }
 
@@ -211,6 +220,7 @@ private fun SettingsScreenPreview(
             onEmailChange = {},
             onSignIn = {},
             onSignOut = {},
+            onRoadmapClick = {}
         )
     }
 }
