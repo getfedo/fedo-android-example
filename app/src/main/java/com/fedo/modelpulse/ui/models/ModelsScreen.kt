@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -34,6 +35,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +66,7 @@ import com.fedo.modelpulse.data.providerFilters
 import com.fedo.modelpulse.data.relativeLabel
 import com.fedo.modelpulse.ui.common.ModelPulseTopBar
 import com.fedo.modelpulse.ui.mergePaddingValues
+import com.fedo.modelpulse.ui.theme.LocalScaffoldPadding
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import com.fedo.sdk.ui.FedoCreateFeedbackSheet
 import java.math.BigDecimal
@@ -76,7 +79,6 @@ internal fun ModelsRoute(
     onModelClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ModelsViewModel = koinViewModel(),
-    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -88,7 +90,6 @@ internal fun ModelsRoute(
         onQueryChange = viewModel::onQueryChange,
         onProviderChange = viewModel::onProviderChange,
         modifier = modifier,
-        contentPadding = contentPadding,
     )
 }
 
@@ -102,7 +103,6 @@ internal fun ModelsScreen(
     onQueryChange: (String) -> Unit,
     onProviderChange: (String?) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -132,7 +132,9 @@ internal fun ModelsScreen(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .padding(top = LocalScaffoldPadding.current.calculateTopPadding())
+        ,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             ModelPulseTopBar(
@@ -141,7 +143,7 @@ internal fun ModelsScreen(
             )
         },
     ) { innerPadding ->
-        val mergedContentPadding = mergePaddingValues(innerPadding, contentPadding)
+        val mergedContentPadding = mergePaddingValues(innerPadding, LocalScaffoldPadding.current)
 
         when (uiState) {
             ModelsUiState.Loading -> LoadingState(Modifier.padding(mergedContentPadding))
@@ -166,15 +168,18 @@ internal fun ModelsScreen(
                     modifier = Modifier.padding(mergedContentPadding),
                 )
             } else {
-                ModelsContent(
-                    state = uiState,
-                    onModelClick = onModelClick,
-                    onRequestModel = openFeedback,
-                    onRefresh = onRefresh,
-                    onQueryChange = onQueryChange,
-                    onProviderChange = onProviderChange,
-                    contentPadding = mergedContentPadding,
-                )
+                CompositionLocalProvider(
+                    LocalScaffoldPadding provides mergedContentPadding
+                ) {
+                    ModelsContent(
+                        state = uiState,
+                        onModelClick = onModelClick,
+                        onRequestModel = openFeedback,
+                        onRefresh = onRefresh,
+                        onQueryChange = onQueryChange,
+                        onProviderChange = onProviderChange,
+                    )
+                }
             }
         }
     }
@@ -196,7 +201,6 @@ private fun ModelsContent(
     onRefresh: () -> Unit,
     onQueryChange: (String) -> Unit,
     onProviderChange: (String?) -> Unit,
-    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     val pullState = rememberPullToRefreshState()
@@ -217,7 +221,7 @@ private fun ModelsContent(
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = contentPadding,
+            contentPadding = LocalScaffoldPadding.current,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item(key = SEARCH_KEY) {

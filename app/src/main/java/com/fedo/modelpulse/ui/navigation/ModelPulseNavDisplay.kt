@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -30,6 +32,7 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -55,6 +58,7 @@ import com.fedo.modelpulse.ui.detail.ModelDetailRoute
 import com.fedo.modelpulse.ui.models.ModelsRoute
 import com.fedo.modelpulse.ui.roadmap.RoadmapScreen
 import com.fedo.modelpulse.ui.settings.SettingsRoute
+import com.fedo.modelpulse.ui.theme.LocalScaffoldPadding
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -78,42 +82,45 @@ fun ModelPulseNavDisplay(modifier: Modifier = Modifier) {
             }
         },
     ) { innerPadding ->
-        NavDisplay(
-            backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
-            // Re-declaring the defaults is the price of adding the ViewModel one.
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator(),
-            ),
-            entryProvider = entryProvider {
-                entry<ModelsKey> {
-                    ModelsRoute(
-                        onModelClick = { id -> backStack.add(ModelDetailKey(id)) },
-                        contentPadding = innerPadding
-                    )
-                }
-                entry<ModelDetailKey> { key ->
-                    ModelDetailRoute(
-                        onBackClick = { backStack.removeLastOrNull() },
-                        viewModel = koinViewModel { parametersOf(key) },
-                        contentPadding = innerPadding
-                    )
-                }
-                entry<RoadmapKey> {
-                    RoadmapScreen(
-                        isConfigured = FedoIntegration.isConfigured,
-                        onBack = { backStack.removeLastOrNull() },
-                    )
-                }
-                entry<SettingsKey> {
-                    SettingsRoute(
-                        onRoadmapClick = { backStack.add(RoadmapKey) },
-                        contentPadding = innerPadding
-                    )
-                }
-            },
-        )
+        CompositionLocalProvider(
+            LocalScaffoldPadding provides innerPadding
+        ) {
+            NavDisplay(
+                modifier = Modifier.consumeWindowInsets(innerPadding),
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                // Re-declaring the defaults is the price of adding the ViewModel one.
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator(),
+                ),
+                entryProvider = entryProvider {
+                    entry<ModelsKey> {
+                        ModelsRoute(
+                            onModelClick = { id -> backStack.add(ModelDetailKey(id)) },
+                        )
+                    }
+                    entry<ModelDetailKey> { key ->
+                        ModelDetailRoute(
+                            onBackClick = { backStack.removeLastOrNull() },
+                            viewModel = koinViewModel { parametersOf(key) },
+                        )
+                    }
+                    entry<RoadmapKey> {
+                        RoadmapScreen(
+                            isConfigured = FedoIntegration.isConfigured,
+                            onBack = { backStack.removeLastOrNull() },
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
+                    entry<SettingsKey> {
+                        SettingsRoute(
+                            onRoadmapClick = { backStack.add(RoadmapKey) },
+                        )
+                    }
+                },
+            )
+        }
     }
 }
 

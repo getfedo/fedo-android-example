@@ -3,7 +3,6 @@ package com.fedo.modelpulse.ui.settings
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fedo.modelpulse.R
 import com.fedo.modelpulse.ui.common.ModelPulseTopBar
 import com.fedo.modelpulse.ui.mergePaddingValues
+import com.fedo.modelpulse.ui.theme.LocalScaffoldPadding
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,7 +41,6 @@ internal fun SettingsRoute(
     onRoadmapClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
-    contentPadding: PaddingValues = PaddingValues()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -53,7 +52,6 @@ internal fun SettingsRoute(
         onSignOut = viewModel::signOut,
         onRoadmapClick = onRoadmapClick,
         modifier = modifier,
-        contentPadding = contentPadding,
     )
 }
 
@@ -67,12 +65,13 @@ internal fun SettingsScreen(
     onSignOut: () -> Unit,
     onRoadmapClick: () -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues()
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier
+            .padding(top = LocalScaffoldPadding.current.calculateTopPadding())
+        ,
         topBar = {
             ModelPulseTopBar(
                 title = stringResource(R.string.settings_title),
@@ -80,7 +79,7 @@ internal fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        val mergedContentPadding = mergePaddingValues(innerPadding, contentPadding)
+        val mergedContentPadding = mergePaddingValues(innerPadding, LocalScaffoldPadding.current)
 
         Column(
             modifier = Modifier

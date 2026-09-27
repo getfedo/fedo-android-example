@@ -18,6 +18,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -51,6 +53,7 @@ import com.fedo.modelpulse.data.relativeLabel
 import com.fedo.modelpulse.ui.common.ModelPulseTopBar
 import com.fedo.modelpulse.ui.common.TopBarBackButton
 import com.fedo.modelpulse.ui.mergePaddingValues
+import com.fedo.modelpulse.ui.theme.LocalScaffoldPadding
 import com.fedo.modelpulse.ui.theme.ModelPulseTheme
 import java.math.BigDecimal
 import java.time.Instant
@@ -63,7 +66,6 @@ internal fun ModelDetailRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ModelDetailViewModel = koinViewModel(),
-    contentPadding: PaddingValues = PaddingValues()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val clipboard = LocalClipboard.current
@@ -80,7 +82,6 @@ internal fun ModelDetailRoute(
             }
         },
         modifier = modifier,
-        contentPadding = contentPadding
     )
 }
 
@@ -91,12 +92,11 @@ internal fun ModelDetailScreen(
     onBackClick: () -> Unit,
     onCopyId: (String) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues()
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().padding(top = LocalScaffoldPadding.current.calculateTopPadding()),
         topBar = {
             ModelPulseTopBar(
                 title = (uiState as? ModelDetailUiState.Success)
@@ -108,7 +108,7 @@ internal fun ModelDetailScreen(
             )
         },
     ) { innerPadding ->
-        val mergedContentPadding = mergePaddingValues(innerPadding, contentPadding)
+        val mergedContentPadding = mergePaddingValues(innerPadding, LocalScaffoldPadding.current)
 
         when (uiState) {
             ModelDetailUiState.Loading -> LoadingState(Modifier.padding(mergedContentPadding))
@@ -123,12 +123,17 @@ internal fun ModelDetailScreen(
                     .padding(32.dp),
             )
 
-            is ModelDetailUiState.Success -> ModelDetailContent(
-                model = uiState.model,
-                onCopyId = onCopyId,
-                scrollBehavior = scrollBehavior,
-                contentPadding = mergedContentPadding,
-            )
+            is ModelDetailUiState.Success -> {
+                CompositionLocalProvider(
+                    LocalScaffoldPadding provides mergedContentPadding
+                ) {
+                    ModelDetailContent(
+                        model = uiState.model,
+                        onCopyId = onCopyId,
+                        scrollBehavior = scrollBehavior,
+                    )
+                }
+            }
         }
     }
 }
@@ -140,7 +145,6 @@ private fun ModelDetailContent(
     scrollBehavior: TopAppBarScrollBehavior,
     onCopyId: (String) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues()
 ) {
     Column(
         modifier = modifier
@@ -148,7 +152,7 @@ private fun ModelDetailContent(
             // A long description scrolls rather than clipping.
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .verticalScroll(rememberScrollState())
-            .padding(contentPadding)
+            .padding(LocalScaffoldPadding.current)
             .padding(horizontal = 16.dp, vertical = 8.dp)
         ,
         verticalArrangement = Arrangement.spacedBy(12.dp),
