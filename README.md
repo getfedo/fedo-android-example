@@ -119,3 +119,4 @@ This example is available under the [MIT License](LICENSE). The Fedo SDK is dist
 
 - Fedo: https://getfedo.com
 - Documentation: https://docs.getfedo.com/guide/getting-started/
+- SDK Integration: https://getfedo.com/blog/android-sdk-integration
