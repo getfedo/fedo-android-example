@@ -1,5 +1,5 @@
 [versions]
-agp = "9.3.3"
+agp = "9.4.1"
 kotlin = "2.3.21"
 composeBom = "2026.02.01"
 # Material 3 expressive is still internal in material3 1.4.0, the version the
