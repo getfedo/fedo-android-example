@@ -42,8 +42,8 @@ baseline schemes below that, so your build will not look identical.
 - JDK 21 (the Gradle toolchain resolves 25 for the build itself)
 - Android Studio Otter or newer, or just the Gradle wrapper
 - `minSdk` 29, `targetSdk` 37
-- Kotlin 2.3.21, AGP 9.3.3, Gradle 9.5.0
-- [`com.getfedo:sdk-android:0.4.1`](https://central.sonatype.com/artifact/com.getfedo/sdk-android) from Maven Central
+- Kotlin 2.2.21, AGP 9.3.3, Gradle 9.5.0
+- [`com.getfedo:sdk-android:0.4.2`](https://central.sonatype.com/artifact/com.getfedo/sdk-android) from Maven Central
 
 Versions are pinned by the SDK's Kotlin floor — see [decisions/0001](specs/decisions/0001-library-versions.md) before bumping anything.
 
