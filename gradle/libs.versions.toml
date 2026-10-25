@@ -6,7 +6,7 @@ composeBom = "2026.09.00"
 # BOM pins. Overridden deliberately — see decisions/0003-material3-expressive.md.
 # Held at alpha01: it is the newest alpha that still carries the
 # ModalBottomSheet overload the Fedo SDK calls — decisions/0006.
-material3 = "1.5.0-alpha01"
+material3 = "1.5.0-alpha29"
 adaptive = "1.3.0"
 coreKtx = "1.19.0"
 lifecycle = "2.11.0"
