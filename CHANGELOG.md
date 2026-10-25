@@ -1,162 +1,69 @@
 # Changelog
 
-All notable changes to this project are documented here.
+Notable changes to ModelPulse, the Fedo Android example app. The format
+follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+ModelPulse versions follow the Fedo SDK's minor version: 0.5.x builds against
+`com.getfedo:sdk-android` 0.5.x.
 
-Each release states the Fedo SDK version it targets.
+## [0.5.0] - 2026-10-25
 
-## [Unreleased]
+Targets `com.getfedo:sdk-android:0.5.0`.
 
-Targets Fedo SDK `0.4.1`.
+### Fedo SDK
 
-The ModelPulse core app and the Fedo SDK showcase are both feature complete:
-catalogue, search, provider filter, detail, navigation and theme on one side;
-roadmap board, settings with demo sign-in, `favorite_provider` and the
-contextual feedback sheet on the other.
+New in the SDK, in short:
 
-### Fixed
+- Threaded comment replies on the feedback board, shown when the board allows
+  replies.
+- `done` feedback is labelled "Shipped". A status the SDK doesn't know shows
+  as "Unknown" instead of breaking the list.
+- SDK logs go to a `logHandler` you provide. The `debug` flag is gone, and
+  logs no longer contain the user's email, name or property values.
+- Session fixes: no crash when refreshing during `logout()` or opening a
+  feedback before sign-in finishes, and a late token refresh can't bring back
+  the previous user.
 
-- A model with no pricing block no longer claims "Variable" pricing. `-1`
-  still means variable; absent or unparseable prices are now `Price.Unknown`
-  and render as an em dash, the same as an unknown context window
-  by @mabd-agent
+### ModelPulse
 
-### Added
+- **Models list.** The public OpenRouter catalogue, newest first. Search by
+  name or id, and filter by provider with chips that show model counts. Pull
+  to refresh. If a refresh fails, the list stays and a snackbar offers Retry.
+- **Model detail.** Input and output price per 1M tokens, context window,
+  release date, input modalities, the full description, and a copyable model
+  id.
+- **Roadmap.** The Fedo feedback board (`FedoFeedbackScreen`), opened from
+  Settings. It handles its own navigation and back.
+- **Contextual feedback.** "Missing a model? Request it" when a search finds
+  nothing, and "Report a problem" when models fail to load. Both open
+  `FedoCreateFeedbackSheet`.
+- **Demo sign-in.** Settings shows the SDK status. Signing in calls
+  `setUserID`, `setUserDisplayName` and `setUserEmail`, and signing out calls
+  `logout()`. The demo user is kept after a restart.
+- **`favorite_provider`.** Picking a provider filter sets this user property,
+  and clearing the filter clears it.
+- **Runs without an API key.** The key is read from the gitignored
+  `local.properties`. Without one, Fedo isn't initialized, the Fedo screens
+  explain how to add a key, and the catalogue works as usual.
+- **Logging.** `Fedo.initialize` sets a `logHandler` that sends the SDK's
+  warnings and errors to Logcat under the `ModelPulse` tag.
+- **Look.** Material 3 expressive, with a floating toolbar for Models and
+  Settings and the same top app bar on every screen. Dynamic colour on
+  Android 12+, and ModelPulse's own light and dark colour schemes on older
+  versions.
 
-- Android project skeleton: single `:app` module, Compose, Material 3,
-  `minSdk` 29 / `targetSdk` 37, Java 21 by @mabd-agent
-- Fedo SDK `com.getfedo:sdk-android:0.4.0`, initialized at app startup when an
-  API key is present. Without a key the app runs and logs a hint instead by @mabd-agent
-- `BuildConfig.FEDO_API_KEY`, read from the gitignored `local.properties` and
-  empty by default so a clean clone still builds. Documented in
-  `local.properties.example` @mabd-agent
-- OkHttp and kotlinx.serialization for the OpenRouter client by @mabd-agent
-- Project specs under `specs/`: constitution, architecture, Compose patterns,
-  testing, and recorded decisions by @mabd-agent
-- OpenRouter data layer: `AiModel` with the derived provider, short name,
-  prices and context window, plus `OpenRouterDataSource.getModels()` returning
-  the catalogue newest first as a `Result`, never throwing by @mabd-agent
-- Contextual Fedo feedback: "Missing a model? Request it" in the no-results
-  state and "Report a problem" in the load-error state both open
-  `FedoCreateFeedbackSheet`, and neither appears without an API key by @mabd-agent
-- `material3` held at 1.5.0-alpha01, the newest version that keeps Material 3
-  expressive public *and* still carries the `ModalBottomSheet` overload the
-  Fedo SDK calls — see `specs/decisions/0006` by @mabd-agent
-- The agent instruction files (`AGENTS.md`, and `CLAUDE.md` through the
-  symlink) now carry a real file map, a table of where each Fedo API is
-  called, and the current conventions — warnings-as-errors, string and
-  accessibility rules, Material 3 expressive, the dependency bar by @mabd-agent
-- Light and dark theme pass: the Android Studio template palette and
-  `colors.xml` are gone, the non-dynamic fallback is the Material baseline
-  scheme, and `values-night/themes.xml` gives the window a dark variant so it
-  cannot flash white before Compose draws. Light screenshots added by @mabd-agent
-- `specs/decisions/0005-features-live-in-beads.md`: one feature workflow —
-  beads describe features, `specs/` holds only what outlives them. The agent
-  instructions no longer reference a `specs/features/` directory that was
-  never created by @mabd-agent
-- Constitution rules for user-facing strings and the minimum accessibility bar:
-  all copy in `strings.xml`, ViewModels carry a `@StringRes Int`, actionable
-  icon-only controls carry a `contentDescription`, and UI tests locate nodes by
-  resolved resources rather than copied literals by @mabd-agent
-- The two models-list error messages moved out of `ModelsViewModel` into
-  `strings.xml`; `ModelsUiState` now carries resource ids by @mabd-agent
-- The provider filter now records `favorite_provider` with
-  `Fedo.setUserProperty`, and writes an empty value when the filter is cleared
-  so a stale favourite cannot linger by @mabd-agent
-- GitHub Actions CI: a secrets guard job, then assemble, unit tests and lint on
-  a keyless checkout, with every action pinned by commit SHA. Kotlin warnings
-  are errors in CI via `-PwarningsAsErrors=true` by @mabd-agent
-- The model detail copy action moved from the deprecated
-  `LocalClipboardManager` to `LocalClipboard` by @mabd-agent
-- Provider ids that share a display name now merge into one filter entry:
-  OpenRouter ships both `meta/…` and `meta-llama/…` as "Meta", which used to
-  render as two identical chips. Selecting the entry filters on every id
-  behind it by @mabd-agent
-- `README.md`, `CONTRIBUTING.md`, `SECURITY.md` and `CODE_OF_CONDUCT.md`,
-  ported from the iOS example and rewritten for the Gradle/Android workflow,
-  plus `.github/` issue forms, PR template and dependabot config by @mabd-agent
-- Screenshots in `docs/images/`, captured on a device by @mabd-agent
-- A failed refresh now shows a snackbar with Retry instead of an item at the
-  top of the list, so it is visible wherever the list is scrolled by @mabd-agent
-- MIT `LICENSE` (Copyright 2026 Fedo) and a short `README.md` linking it, with
-  a note that the Fedo SDK ships under its own license by @mabd-agent
-- `app/src/test/resources/models.json`: a trimmed real OpenRouter response
-  covering the decoder's awkward cases — a `~`-prefixed id, `"0"` and `"-1"`
-  prices, a null `context_length`, a missing `architecture` block and an
-  unknown field — with tests that decode it through the production `Json`
-  config by @mabd-agent
-- Fedo SDK test dependencies (`kotlin-test`, `kotlin-test-junit`,
-  `ktor-client-mock`) excluded from the app's runtime classpath: the SDK
-  publishes them at runtime scope, so they were dexed into the APK. The debug
-  APK drops from ~80 MB to ~62 MB by @mabd-agent
-- Settings screen: Fedo SDK status and a demo account. Signing in calls
-  `setUserID` (a generated `demo-` id, never the email), `setUserDisplayName`
-  and `setUserEmail`; signing out calls `logout()`. The demo user is kept in
-  SharedPreferences so sign-in survives a restart, and the controls are
-  disabled with an explanation when no API key is configured by @mabd-agent
-- `specs/decisions/0004-demo-user-persistence.md`: why the demo user is the
-  one thing this app persists by @mabd-agent
-- Roadmap destination hosting the Fedo feedback board (`FedoFeedbackScreen`),
-  which owns its internal navigation; backing out of its root returns to the
-  models list. Without an API key the tab explains how to add one instead of
-  disappearing by @mabd-agent
-- `specs/fedo-showcase.md`: where each Fedo surface sits, what demo sign-in
-  sets, what the app does without an API key, and why Fedo failures get no
-  invented error UI by @mabd-agent
-- Model detail screen, opened by tapping a row: provider, input and output
-  price per 1M tokens, context window, release date, input modalities and the
-  full scrolling description, plus the model id in monospace with a copy
-  action. An id missing from the catalogue shows a not-found state
-  by @mabd-agent
-- App navigation scaffold: a floating bottom navigation bar with Models, Roadmap and
-  Settings, built on Navigation 3 (`NavDisplay` + a `@Serializable` `NavKey`
-  back stack). Models is the back-stack root, so system back from any other
-  destination returns to it. Roadmap and Settings are placeholders until the
-  Fedo screens land by @mabd-agent
-- Search and provider filter on the models list: search matches a model's name
-  or id case-insensitively, the provider chips count their models and list the
-  biggest first, and the two combine. Providers group by the stable
-  `providerSlug`, so a refresh that drops the selected provider clears the
-  selection instead of stranding an empty screen. A search or filter that
-  matches nothing shows a no-results state, distinct from an empty catalogue
-  by @mabd-agent
-- `ic_search` and `ic_close` vector drawables, inlined from Material Symbols so
-  the search field has icons without the `material-icons` artifact by @mabd-agent
-- Pure formatters `perMillionLabel()`, `contextLabel()` and `relativeLabel()`,
-  covering "Free", "Variable" and the "<$0.01" floor, with unit tests by @mabd-agent
+### Build and CI
 
-- Models list screen: newest models first, with loading, empty and error
-  states, pull to refresh, and an inline notice when a refresh fails while
-  models are already on screen — the list is never wiped by @mabd-agent
-- `ModelsRepository`, which keeps the last successful response in memory for
-  the session. A refresh started while a load is already running joins it and
-  shares its result, so two callers never cause two fetches and neither is
-  left with a cancellation instead of a result by @mabd-agent
-- Koin wiring for the data and UI layers, started from
-  `ModelPulseApplication` by @mabd-agent
+- `versionName` is `0.5.0`. It was `0.4.0` before.
+- R8 is enabled for the release build.
+- `material3` is held at 1.5.0-alpha01, the newest version that still has the
+  `ModalBottomSheet` overload the SDK's feedback sheet calls (see
+  `specs/decisions/0006`).
+- GitHub Actions checks that no secrets are committed, then builds, runs unit
+  tests and lint, with Kotlin warnings treated as errors. Actions are pinned
+  by commit SHA.
+- README with light and dark screenshots (`scripts/screenshots.sh` retakes
+  them all), contributing guide, security policy, MIT license, and the
+  project specs and decisions under `specs/`.
 
-### Changed
-
-- README screenshots retaken on the Galaxy A51. `scripts/screenshots.sh`
-  now reaches Roadmap through Settings, since Roadmap left the bottom bar
-  by @mabd-agent
-- `specs/screenshots.md` and `scripts/screenshots.sh`: one command retakes
-  every README screenshot, dark and light, per screen by @mabd-agent
-- README screenshots retaken on a phone, dark and light, showing the unified
-  top app bars by @mabd-agent
-- `specs/architecture.md` now matches the shipped data layer: the data source
-  and repository snippets compile, sorting is documented as the data source's
-  job, and the mapping shows the lowercased provider slug and the id-prefix
-  fallback for the provider name by @mabd-agent
-- `OpenRouterDataSource` is `internal`, as the architecture spec states by @mabd-agent
-- `material3` is pinned to 1.5.0-alpha28, ahead of the Compose BOM, because
-  the Material 3 expressive APIs are `internal` in every stable release.
-  Recorded in `specs/decisions/0003-material3-expressive.md` by @mabd-agent
-- The app theme is `MaterialExpressiveTheme` by @mabd-agent
-- R8 is enabled for the release build, which strips the Fedo SDK's leaked test
-  dependencies from the release APK: 46 MB debug against 2.5 MB release.
-  Recorded in `specs/decisions/0002-release-optimization.md` by @mabd-agent
-
-[Unreleased]: https://github.com/getfedo/fedo-android-example/commits/main
+[0.5.0]: https://github.com/getfedo/fedo-android-example/releases/tag/v0.5.0

@@ -42,7 +42,7 @@ android {
         versionCode = 1
         // The Fedo product line shares X.Y across its SDKs, so the example
         // tracks the SDK's minor version — bead f9g.12.
-        versionName = "0.4.0"
+        versionName = "0.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
